@@ -37,4 +37,4 @@ def calcular_proximo_mantenimiento(
             )
         )
 
-        return resultados
+    return resultado
