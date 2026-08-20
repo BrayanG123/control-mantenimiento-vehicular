@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'modelos.dart';
 
-// emulador: correr "adb reverse tcp:8000 tcp:8000"
+
 const String baseUrl = 'http://127.0.0.1:8000';
 
 Future<http.Response> _get(String path) {
