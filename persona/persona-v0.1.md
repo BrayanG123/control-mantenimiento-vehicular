@@ -26,7 +26,7 @@ Inicio -> Mi vehiculo -> Mantenimientos
 [Mantenimientos] Registrar mantenimiento, Historial
 
 
-# Flujo principal
+# Flujo principal (clase 1)
 
 Inicio:
 El usuario abre la aplicación.
@@ -40,3 +40,20 @@ Flujo:
 
 Resultado:
 El usuario sabe qué mantenimiento necesita realizar y a qué kilometraje corresponde.
+
+
+# Flujo 2 - clase 5 (jerarquia y layout)
+
+Pantalla: Inicio - Proximo mantenimiento
+
+Mariana abre la app despues de actualizar el kilometraje en Mi vehiculo.
+
+Flujo:
+    - Abrir la app (pestaña Inicio)
+    - Ver arriba los datos de su moto y el km actual
+    - Revisar la lista de mantenimientos
+    - Identificar cuales estan vencidos (rojo), proximos (naranja) o al dia (verde)
+    - Si quiere datos nuevos, toca el boton de actualizar
+
+Resultado:
+Entiende de un vistazo que mantenimiento le urge y cuantos km le faltan, sin leer toda la lista linea por linea.

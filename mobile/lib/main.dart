@@ -120,9 +120,9 @@ class _HomeState extends State<Home> {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(tab == 0 ? 'Proximo mantenimiento' : 'Mi vehiculo'),
-      ),
+      appBar: tab == 0
+          ? null
+          : AppBar(title: const Text('Mi vehiculo')),
       body: pantallas[tab],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: tab,
