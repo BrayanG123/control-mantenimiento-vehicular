@@ -52,3 +52,35 @@ class ProximoItem {
     );
   }
 }
+
+class Mantenimiento {
+  int id;
+  int vehiculo_id;
+  String tipo;
+  DateTime fecha;
+  int kilometraje;
+  int proximo_kilometraje;
+  double? costo;
+
+  Mantenimiento({
+    required this.id,
+    required this.vehiculo_id,
+    required this.tipo,
+    required this.fecha,
+    required this.kilometraje,
+    required this.proximo_kilometraje,
+    this.costo,
+  });
+
+  factory Mantenimiento.fromJson(Map<String, dynamic> json) {
+    return Mantenimiento(
+      id: json['id'],
+      vehiculo_id: json['vehiculo_id'],
+      tipo: json['tipo'],
+      fecha: DateTime.parse(json['fecha']),
+      kilometraje: json['kilometraje'],
+      proximo_kilometraje: json['proximo_kilometraje'],
+      costo: (json['costo'] as num?)?.toDouble(),
+    );
+  }
+}

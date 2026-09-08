@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../api.dart';
 import '../modelos.dart';
+import 'historial.dart';
 
 class InicioPantalla extends StatefulWidget {
   const InicioPantalla({super.key});
@@ -49,11 +51,17 @@ class _InicioPantallaState extends State<InicioPantalla> {
     }
   }
 
+  void abrirHistorial() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const HistorialPantalla()),
+    );
+  }
+
   // 0 = vencido, 1 = proximo, 2 = al dia
   int _prio(ProximoItem item) {
     if (item.kilometrajes_restantes <= 0) return 0;
-    final intervalo =
-        item.proximo_kilometraje - (item.ultimo_kilometraje ?? 0);
+    final intervalo = item.proximo_kilometraje - (item.ultimo_kilometraje ?? 0);
     if (item.kilometrajes_restantes <= intervalo * 0.2) return 1;
     return 2;
   }
@@ -89,6 +97,10 @@ class _InicioPantallaState extends State<InicioPantalla> {
                   'Proximo mantenimiento',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+              ),
+              IconButton(
+                onPressed: abrirHistorial,
+                icon: const Icon(Icons.history),
               ),
               IconButton(onPressed: cargar, icon: const Icon(Icons.refresh)),
             ],
@@ -171,8 +183,7 @@ class _InicioPantallaState extends State<InicioPantalla> {
       estadoTxt = 'AL DIA';
     }
 
-    final intervalo =
-        item.proximo_kilometraje - (item.ultimo_kilometraje ?? 0);
+    final intervalo = item.proximo_kilometraje - (item.ultimo_kilometraje ?? 0);
     var barra = 0.0;
     if (intervalo > 0) {
       barra = (intervalo - item.kilometrajes_restantes) / intervalo;
@@ -193,7 +204,10 @@ class _InicioPantallaState extends State<InicioPantalla> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(tipo, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    tipo,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   Text('Proximo a los ${item.proximo_kilometraje} km'),
                   Text(
                     item.kilometrajes_restantes <= 0

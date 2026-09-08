@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, Enum as SAEnum
 from sqlalchemy.orm import relationship
 from app.database import Base
-from app.core.intervalos import TipoMantenimiento
+from app.core.intervalos import TipoMantenimiento, INTERVALOS_KM
 
 
 
@@ -16,3 +16,7 @@ class Mantenimiento(Base):
     costo = Column(Float, nullable=True)
 
     vehiculo = relationship("Vehiculo", back_populates="mantenimientos")
+
+    @property
+    def proximo_kilometraje(self) -> int:
+        return self.kilometraje + INTERVALOS_KM[self.tipo]

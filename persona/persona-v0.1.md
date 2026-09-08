@@ -42,18 +42,33 @@ Resultado:
 El usuario sabe qué mantenimiento necesita realizar y a qué kilometraje corresponde.
 
 
-# Flujo 2 - clase 5 (jerarquia y layout)
+# Flujo 2 - registrar mantenimiento realizado
 
-Pantalla: Inicio - Proximo mantenimiento
-
-Mariana abre la app despues de actualizar el kilometraje en Mi vehiculo.
+Inicio:
+Mariana ya sabe que el aceite está vencido (resultado del Flujo 1). Fue al taller y vuelve a la app para dejarlo asentado.
 
 Flujo:
-    - Abrir la app (pestaña Inicio)
-    - Ver arriba los datos de su moto y el km actual
-    - Revisar la lista de mantenimientos
-    - Identificar cuales estan vencidos (rojo), proximos (naranja) o al dia (verde)
-    - Si quiere datos nuevos, toca el boton de actualizar
+    - Abrir Inicio y ver el aceite vencido
+    - Tocar la tarjeta de cambio de aceite
+    - Completar kilometraje y fecha del servicio
+    - Guardar el mantenimiento
+    - Volver a Inicio y comprobar que el aceite quedó al día
 
 Resultado:
-Entiende de un vistazo que mantenimiento le urge y cuantos km le faltan, sin leer toda la lista linea por linea.
+El servicio queda en el historial y el próximo aceite se recalcula. El pendiente ahora es otro (frenos).
+
+
+# Flujo 3 - consultar historial
+
+Inicio:
+Mariana ya registró el aceite (resultado del Flujo 2). Ahora quiere revisar qué mantenimientos ya hizo y con qué datos quedaron guardados.
+
+Flujo:
+    - Abrir Inicio
+    - Entrar al historial
+    - Revisar la lista de servicios hechos
+    - Abrir el detalle del cambio de aceite
+    - Ver la fecha y el kilometraje del servicio
+
+Resultado:
+Consulta el pasado dentro de la app: aceite el 3 sep 2026 a los 12.500 km.

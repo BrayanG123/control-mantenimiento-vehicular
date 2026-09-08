@@ -19,6 +19,7 @@ class MantenimientoCreate(MantenimientoBase):
 class MantenimientoResponse(MantenimientoBase):
     id: int
     vehiculo_id: int
+    proximo_kilometraje: int
 
     model_config = ConfigDict(from_attributes=True)
 
