@@ -1,12 +1,15 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'modelos.dart';
 
+import 'package:http/http.dart' as http;
+
+import 'modelos.dart';
 
 const String baseUrl = 'http://127.0.0.1:8000';
 
 Future<http.Response> _get(String path) {
-  return http.get(Uri.parse('$baseUrl$path')).timeout(const Duration(seconds: 8));
+  return http
+      .get(Uri.parse('$baseUrl$path'))
+      .timeout(const Duration(seconds: 8));
 }
 
 Future<http.Response> _post(String path, Map body) {
@@ -82,4 +85,14 @@ Future<List<ProximoItem>> obtenerProximos() async {
 
   final lista = jsonDecode(resp.body) as List;
   return lista.map((e) => ProximoItem.fromJson(e)).toList();
+}
+
+Future<List<Mantenimiento>> obtenerHistorial() async {
+  final resp = await _get('/mantenimiento/historial');
+  if (resp.statusCode != 200) {
+    throw Exception('error al cargar historial');
+  }
+
+  final lista = jsonDecode(resp.body) as List;
+  return lista.map((e) => Mantenimiento.fromJson(e)).toList();
 }
