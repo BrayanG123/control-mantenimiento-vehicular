@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../api.dart';
+import '../formato.dart';
 import '../modelos.dart';
 import 'historial.dart';
+import 'registrar_mantenimiento.dart';
 
 class InicioPantalla extends StatefulWidget {
   const InicioPantalla({super.key});
@@ -56,6 +58,26 @@ class _InicioPantallaState extends State<InicioPantalla> {
       context,
       MaterialPageRoute(builder: (_) => const HistorialPantalla()),
     );
+  }
+
+  Future<void> abrirRegistro(ProximoItem item) async {
+    final v = vehiculo;
+    if (v == null) return;
+
+    final ok = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RegistrarMantenimientoPantalla(
+          tipo: item.tipo,
+          kilometrajeActual: v.kilometraje_actual,
+          item: item,
+        ),
+      ),
+    );
+
+    if (ok == true && mounted) {
+      await cargar();
+    }
   }
 
   // 0 = vencido, 1 = proximo, 2 = al dia
@@ -191,51 +213,55 @@ class _InicioPantallaState extends State<InicioPantalla> {
       if (barra > 1) barra = 1;
     }
 
-    final tipo = item.tipo[0].toUpperCase() + item.tipo.substring(1);
-
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Icon(Icons.circle, color: color, size: 16),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: vehiculo == null ? null : () => abrirRegistro(item),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.circle, color: color, size: 16),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tituloTipo(item.tipo),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text('Proximo a los ${item.proximo_kilometraje} km'),
+                    Text(
+                      item.kilometrajes_restantes <= 0
+                          ? 'Pasado por ${item.kilometrajes_restantes.abs()} km'
+                          : 'Restan ${item.kilometrajes_restantes} km',
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    tipo,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    estadoTxt,
+                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
                   ),
-                  Text('Proximo a los ${item.proximo_kilometraje} km'),
-                  Text(
-                    item.kilometrajes_restantes <= 0
-                        ? 'Pasado por ${item.kilometrajes_restantes.abs()} km'
-                        : 'Restan ${item.kilometrajes_restantes} km',
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: 60,
+                    child: LinearProgressIndicator(
+                      value: barra,
+                      color: color,
+                      backgroundColor: Colors.grey.shade200,
+                    ),
                   ),
                 ],
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  estadoTxt,
-                  style: TextStyle(color: color, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: 60,
-                  child: LinearProgressIndicator(
-                    value: barra,
-                    color: color,
-                    backgroundColor: Colors.grey.shade200,
-                  ),
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
+            ],
+          ),
         ),
       ),
     );
