@@ -18,6 +18,7 @@ const _titulos = {
   'llantas': 'Rotacion de neumaticos',
   'frenos': 'Pastillas de freno',
   'filtros': 'Filtro de aire',
+  'cadena': 'Cadena (reparacion)',
 };
 
 String fmtMiles(int n) {
@@ -37,4 +38,15 @@ String fmtFecha(DateTime fecha) {
 
 String tituloTipo(String tipo) {
   return _titulos[tipo] ?? tipo[0].toUpperCase() + tipo.substring(1);
+}
+
+bool enPeriodo(DateTime fecha, String periodo) {
+  final now = DateTime.now();
+  final f = DateTime(fecha.year, fecha.month, fecha.day);
+  if (periodo == 'todo') return true;
+  if (periodo == '3_meses') {
+    final corte = now.subtract(const Duration(days: 90));
+    return !f.isBefore(DateTime(corte.year, corte.month, corte.day));
+  }
+  return f.year == now.year;
 }

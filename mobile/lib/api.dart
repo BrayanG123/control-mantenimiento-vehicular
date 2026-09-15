@@ -108,12 +108,18 @@ Future<Mantenimiento> crearMantenimiento({
   required String tipo,
   required DateTime fecha,
   required int kilometraje,
+  double? costo,
 }) async {
-  final resp = await _post('/mantenimiento/', {
+  final body = {
     'tipo': tipo,
     'fecha': _fechaIso(fecha),
     'kilometraje': kilometraje,
-  });
+  };
+  if (costo != null) {
+    body['costo'] = costo;
+  }
+
+  final resp = await _post('/mantenimiento/', body);
 
   if (resp.statusCode != 201) {
     print(resp.body);
@@ -121,4 +127,12 @@ Future<Mantenimiento> crearMantenimiento({
   }
 
   return Mantenimiento.fromJson(jsonDecode(resp.body));
+}
+
+Future<ResumenGastos> obtenerGastos({String periodo = 'este_anio'}) async {
+  final resp = await _get('/mantenimiento/gastos?periodo=$periodo');
+  if (resp.statusCode != 200) {
+    throw Exception('error al cargar gastos');
+  }
+  return ResumenGastos.fromJson(jsonDecode(resp.body));
 }

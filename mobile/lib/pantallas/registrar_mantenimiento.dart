@@ -27,6 +27,8 @@ class _RegistrarMantenimientoPantallaState
     extends State<RegistrarMantenimientoPantalla> {
   late final TextEditingController kmCtrl;
   final kmFocus = FocusNode();
+  final costoCtrl = TextEditingController();
+  final costoFocus = FocusNode();
 
   late DateTime fecha;
   bool guardando = false;
@@ -38,6 +40,7 @@ class _RegistrarMantenimientoPantallaState
     fecha = DateTime.now();
     kmCtrl = TextEditingController(text: '${widget.kilometrajeActual}');
     kmFocus.addListener(() => setState(() {}));
+    costoFocus.addListener(() => setState(() {}));
     kmCtrl.addListener(() {
       if (errorCampo != null) {
         setState(() => errorCampo = null);
@@ -51,6 +54,8 @@ class _RegistrarMantenimientoPantallaState
   void dispose() {
     kmCtrl.dispose();
     kmFocus.dispose();
+    costoCtrl.dispose();
+    costoFocus.dispose();
     super.dispose();
   }
 
@@ -58,6 +63,12 @@ class _RegistrarMantenimientoPantallaState
     final raw = kmCtrl.text.replaceAll('.', '').replaceAll(' ', '');
     if (raw.isEmpty) return null;
     return int.tryParse(raw);
+  }
+
+  double? _costoIngresado() {
+    final raw = costoCtrl.text.replaceAll('.', '').replaceAll(',', '').replaceAll(' ', '');
+    if (raw.isEmpty) return null;
+    return double.tryParse(raw);
   }
 
   Future<void> elegirFecha() async {
@@ -84,6 +95,12 @@ class _RegistrarMantenimientoPantallaState
       setState(() => errorCampo = 'Debe ser mayor a 0');
       return;
     }
+    if (costoCtrl.text.trim().isNotEmpty && _costoIngresado() == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('El costo no es un numero')),
+      );
+      return;
+    }
 
     setState(() => guardando = true);
 
@@ -92,6 +109,7 @@ class _RegistrarMantenimientoPantallaState
         tipo: widget.tipo,
         fecha: fecha,
         kilometraje: km,
+        costo: _costoIngresado(),
       );
       if (km > widget.kilometrajeActual) {
         try {
@@ -294,6 +312,55 @@ class _RegistrarMantenimientoPantallaState
               Expanded(
                 child: Text(
                   'El dia en que te hicieron el servicio en el taller',
+                  style: TextStyle(fontSize: 12, color: muted),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Costo del servicio',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: costoFocus.hasFocus ? FontWeight.w600 : FontWeight.w500,
+              color: costoFocus.hasFocus ? teal : muted,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            height: 56,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: costoFocus.hasFocus ? teal : borde,
+                width: costoFocus.hasFocus ? 2 : 1,
+              ),
+            ),
+            child: TextField(
+              controller: costoCtrl,
+              focusNode: costoFocus,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              style: const TextStyle(fontSize: 17, color: texto),
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+                hintText: 'Ej. 180',
+                hintStyle: TextStyle(color: Color(0xFFB0B8B5), fontSize: 17),
+                suffixText: 'Bs',
+                suffixStyle: TextStyle(color: muted, fontSize: 14),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Row(
+            children: [
+              Icon(Icons.info_outline, size: 14, color: muted),
+              SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Opcional. En bolivianos.',
                   style: TextStyle(fontSize: 12, color: muted),
                 ),
               ),

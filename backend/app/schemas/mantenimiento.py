@@ -30,3 +30,21 @@ class ProximoMantenimientoItem(BaseModel):
     proximo_kilometraje: int
     kilometrajes_restantes: int
     vencido: bool
+
+
+class ItemGasto(BaseModel):
+    tipo: str
+    total: float
+    cantidad: int
+
+
+class ResumenGastos(BaseModel):
+    periodo: str
+    desde: date | None
+    hasta: date
+    total: float
+    preventivo: float
+    reparacion: float
+    con_costo: int
+    sin_costo: int
+    por_tipo: list[ItemGasto]

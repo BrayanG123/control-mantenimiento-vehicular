@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import '../formato.dart';
 import '../modelos.dart';
+import 'gastos.dart';
 import 'historial.dart';
 import 'registrar_mantenimiento.dart';
 
@@ -16,6 +17,7 @@ class InicioPantalla extends StatefulWidget {
 class _InicioPantallaState extends State<InicioPantalla> {
   Vehiculo? vehiculo;
   List<ProximoItem>? lista;
+  ResumenGastos? gastos;
   String? error;
   bool cargando = true;
 
@@ -33,6 +35,7 @@ class _InicioPantallaState extends State<InicioPantalla> {
     try {
       final v = await obtenerVehiculo();
       final data = await obtenerProximos();
+      final g = await obtenerGastos();
       data.sort((a, b) {
         final pa = _prio(a);
         final pb = _prio(b);
@@ -42,6 +45,7 @@ class _InicioPantallaState extends State<InicioPantalla> {
       setState(() {
         vehiculo = v;
         lista = data;
+        gastos = g;
         cargando = false;
       });
     } catch (e) {
@@ -57,6 +61,13 @@ class _InicioPantallaState extends State<InicioPantalla> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const HistorialPantalla()),
+    );
+  }
+
+  void abrirGastos() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const GastosPantalla()),
     );
   }
 
@@ -130,6 +141,8 @@ class _InicioPantallaState extends State<InicioPantalla> {
           const SizedBox(height: 16),
           if (vehiculo != null) ...[
             _cardVehiculo(vehiculo!),
+            const SizedBox(height: 16),
+            _cardGastos(),
             const SizedBox(height: 24),
           ],
           const Text(
@@ -143,6 +156,45 @@ class _InicioPantallaState extends State<InicioPantalla> {
               child: _cardMantenimiento(item),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _cardGastos() {
+    final monto = gastos == null
+        ? '-'
+        : 'Bs ${fmtMiles(gastos!.total.round())}';
+
+    return Card(
+      child: InkWell(
+        onTap: abrirGastos,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.teal.shade50,
+                child: Icon(Icons.attach_money, color: Colors.teal.shade700),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Gastos este año',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Text(
+                monto,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal.shade700,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
+            ],
+          ),
+        ),
       ),
     );
   }

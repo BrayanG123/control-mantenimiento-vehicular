@@ -84,3 +84,62 @@ class Mantenimiento {
     );
   }
 }
+
+class ItemGasto {
+  String tipo;
+  double total;
+  int cantidad;
+
+  ItemGasto({
+    required this.tipo,
+    required this.total,
+    required this.cantidad,
+  });
+
+  factory ItemGasto.fromJson(Map<String, dynamic> json) {
+    return ItemGasto(
+      tipo: json['tipo'],
+      total: (json['total'] as num).toDouble(),
+      cantidad: json['cantidad'],
+    );
+  }
+}
+
+class ResumenGastos {
+  String periodo;
+  DateTime? desde;
+  DateTime hasta;
+  double total;
+  double preventivo;
+  double reparacion;
+  int con_costo;
+  int sin_costo;
+  List<ItemGasto> por_tipo;
+
+  ResumenGastos({
+    required this.periodo,
+    this.desde,
+    required this.hasta,
+    required this.total,
+    required this.preventivo,
+    required this.reparacion,
+    required this.con_costo,
+    required this.sin_costo,
+    required this.por_tipo,
+  });
+
+  factory ResumenGastos.fromJson(Map<String, dynamic> json) {
+    final lista = json['por_tipo'] as List;
+    return ResumenGastos(
+      periodo: json['periodo'],
+      desde: json['desde'] != null ? DateTime.parse(json['desde']) : null,
+      hasta: DateTime.parse(json['hasta']),
+      total: (json['total'] as num).toDouble(),
+      preventivo: (json['preventivo'] as num).toDouble(),
+      reparacion: (json['reparacion'] as num).toDouble(),
+      con_costo: json['con_costo'],
+      sin_costo: json['sin_costo'],
+      por_tipo: lista.map((e) => ItemGasto.fromJson(e)).toList(),
+    );
+  }
+}
