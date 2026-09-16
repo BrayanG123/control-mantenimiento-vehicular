@@ -6,6 +6,8 @@ class TipoMantenimiento(str, Enum):
     LLANTAS = "llantas"
     FRENOS = "frenos"
     FILTROS = "filtros"
+    # reparacion, no va en el semaforo de inicio
+    CADENA = "cadena"
 
 
 INTERVALOS_KM: dict[TipoMantenimiento, int] = {
@@ -13,4 +15,5 @@ INTERVALOS_KM: dict[TipoMantenimiento, int] = {
     TipoMantenimiento.LLANTAS: 20000,
     TipoMantenimiento.FRENOS:  15000,
     TipoMantenimiento.FILTROS: 10000,
+    TipoMantenimiento.CADENA:  5000,
 }

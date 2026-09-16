@@ -6,9 +6,10 @@ from app.models.mantenimiento import Mantenimiento
 from app.schemas.mantenimiento import (
     MantenimientoCreate,
     MantenimientoResponse,
-    ProximoMantenimientoItem
+    ProximoMantenimientoItem,
+    ResumenGastos,
 )
-from app.services.calculo_mantenimiento import calcular_proximo_mantenimiento
+from app.services.calculo_mantenimiento import calcular_proximo_mantenimiento, calcular_gastos
 
 
 
@@ -61,3 +62,9 @@ def obtener_pendientes(db: Session = Depends(get_db)):
     vehiculo = _obtener_vehiculo_unico(db)
     todos = calcular_proximo_mantenimiento(db, vehiculo.id, vehiculo.kilometraje_actual)
     return [item for item in todos if item.vencido]
+
+
+@router.get("/gastos", response_model=ResumenGastos)
+def obtener_gastos(periodo: str = "este_anio", db: Session = Depends(get_db)):
+    vehiculo = _obtener_vehiculo_unico(db)
+    return calcular_gastos(db, vehiculo.id, periodo)

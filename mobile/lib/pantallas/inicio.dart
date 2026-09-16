@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../api.dart';
+import '../formato.dart';
 import '../modelos.dart';
+import 'gastos.dart';
 import 'historial.dart';
+import 'registrar_mantenimiento.dart';
 
 class InicioPantalla extends StatefulWidget {
   const InicioPantalla({super.key});
@@ -14,6 +17,7 @@ class InicioPantalla extends StatefulWidget {
 class _InicioPantallaState extends State<InicioPantalla> {
   Vehiculo? vehiculo;
   List<ProximoItem>? lista;
+  ResumenGastos? gastos;
   String? error;
   bool cargando = true;
 
@@ -31,6 +35,7 @@ class _InicioPantallaState extends State<InicioPantalla> {
     try {
       final v = await obtenerVehiculo();
       final data = await obtenerProximos();
+      final g = await obtenerGastos();
       data.sort((a, b) {
         final pa = _prio(a);
         final pb = _prio(b);
@@ -40,6 +45,7 @@ class _InicioPantallaState extends State<InicioPantalla> {
       setState(() {
         vehiculo = v;
         lista = data;
+        gastos = g;
         cargando = false;
       });
     } catch (e) {
@@ -56,6 +62,33 @@ class _InicioPantallaState extends State<InicioPantalla> {
       context,
       MaterialPageRoute(builder: (_) => const HistorialPantalla()),
     );
+  }
+
+  void abrirGastos() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const GastosPantalla()),
+    );
+  }
+
+  Future<void> abrirRegistro(ProximoItem item) async {
+    final v = vehiculo;
+    if (v == null) return;
+
+    final ok = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RegistrarMantenimientoPantalla(
+          tipo: item.tipo,
+          kilometrajeActual: v.kilometraje_actual,
+          item: item,
+        ),
+      ),
+    );
+
+    if (ok == true && mounted) {
+      await cargar();
+    }
   }
 
   // 0 = vencido, 1 = proximo, 2 = al dia
@@ -108,6 +141,8 @@ class _InicioPantallaState extends State<InicioPantalla> {
           const SizedBox(height: 16),
           if (vehiculo != null) ...[
             _cardVehiculo(vehiculo!),
+            const SizedBox(height: 16),
+            _cardGastos(),
             const SizedBox(height: 24),
           ],
           const Text(
@@ -121,6 +156,45 @@ class _InicioPantallaState extends State<InicioPantalla> {
               child: _cardMantenimiento(item),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _cardGastos() {
+    final monto = gastos == null
+        ? '-'
+        : 'Bs ${fmtMiles(gastos!.total.round())}';
+
+    return Card(
+      child: InkWell(
+        onTap: abrirGastos,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.teal.shade50,
+                child: Icon(Icons.attach_money, color: Colors.teal.shade700),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Gastos este año',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Text(
+                monto,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal.shade700,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -191,51 +265,55 @@ class _InicioPantallaState extends State<InicioPantalla> {
       if (barra > 1) barra = 1;
     }
 
-    final tipo = item.tipo[0].toUpperCase() + item.tipo.substring(1);
-
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Icon(Icons.circle, color: color, size: 16),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: vehiculo == null ? null : () => abrirRegistro(item),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.circle, color: color, size: 16),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tituloTipo(item.tipo),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text('Proximo a los ${item.proximo_kilometraje} km'),
+                    Text(
+                      item.kilometrajes_restantes <= 0
+                          ? 'Pasado por ${item.kilometrajes_restantes.abs()} km'
+                          : 'Restan ${item.kilometrajes_restantes} km',
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    tipo,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    estadoTxt,
+                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
                   ),
-                  Text('Proximo a los ${item.proximo_kilometraje} km'),
-                  Text(
-                    item.kilometrajes_restantes <= 0
-                        ? 'Pasado por ${item.kilometrajes_restantes.abs()} km'
-                        : 'Restan ${item.kilometrajes_restantes} km',
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: 60,
+                    child: LinearProgressIndicator(
+                      value: barra,
+                      color: color,
+                      backgroundColor: Colors.grey.shade200,
+                    ),
                   ),
                 ],
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  estadoTxt,
-                  style: TextStyle(color: color, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: 60,
-                  child: LinearProgressIndicator(
-                    value: barra,
-                    color: color,
-                    backgroundColor: Colors.grey.shade200,
-                  ),
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
+            ],
+          ),
         ),
       ),
     );

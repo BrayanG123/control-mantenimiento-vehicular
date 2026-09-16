@@ -36,20 +36,22 @@ class DetalleMantenimientoPantalla extends StatelessWidget {
           const SizedBox(height: 16),
           _resumen(m),
           const SizedBox(height: 20),
+          if (m.costo != null) ...[
+            _datoCaja('Costo del servicio', 'Bs ${fmtMiles(m.costo!.round())}'),
+            const SizedBox(height: 12),
+          ],
           _datoCaja('Fecha del servicio', fmtFecha(m.fecha)),
           const SizedBox(height: 12),
           _datoCaja(
             'Kilometraje del servicio',
             '${fmtMiles(m.kilometraje)} km',
           ),
-          const SizedBox(height: 12),
-          _datoCaja(
-            'Proximo servicio',
-            '${fmtMiles(m.proximo_kilometraje)} km',
-          ),
-          if (m.costo != null) ...[
+          if (m.tipo != 'cadena') ...[
             const SizedBox(height: 12),
-            _datoCaja('Costo', 'Bs ${fmtMiles(m.costo!.round())}'),
+            _datoCaja(
+              'Proximo servicio',
+              '${fmtMiles(m.proximo_kilometraje)} km',
+            ),
           ],
           const SizedBox(height: 16),
           const Row(

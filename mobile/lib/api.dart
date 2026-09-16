@@ -96,3 +96,43 @@ Future<List<Mantenimiento>> obtenerHistorial() async {
   final lista = jsonDecode(resp.body) as List;
   return lista.map((e) => Mantenimiento.fromJson(e)).toList();
 }
+
+String _fechaIso(DateTime fecha) {
+  final y = fecha.year.toString().padLeft(4, '0');
+  final m = fecha.month.toString().padLeft(2, '0');
+  final d = fecha.day.toString().padLeft(2, '0');
+  return '$y-$m-$d';
+}
+
+Future<Mantenimiento> crearMantenimiento({
+  required String tipo,
+  required DateTime fecha,
+  required int kilometraje,
+  double? costo,
+}) async {
+  final body = {
+    'tipo': tipo,
+    'fecha': _fechaIso(fecha),
+    'kilometraje': kilometraje,
+  };
+  if (costo != null) {
+    body['costo'] = costo;
+  }
+
+  final resp = await _post('/mantenimiento/', body);
+
+  if (resp.statusCode != 201) {
+    print(resp.body);
+    throw Exception('no se pudo registrar el mantenimiento');
+  }
+
+  return Mantenimiento.fromJson(jsonDecode(resp.body));
+}
+
+Future<ResumenGastos> obtenerGastos({String periodo = 'este_anio'}) async {
+  final resp = await _get('/mantenimiento/gastos?periodo=$periodo');
+  if (resp.statusCode != 200) {
+    throw Exception('error al cargar gastos');
+  }
+  return ResumenGastos.fromJson(jsonDecode(resp.body));
+}
