@@ -23,7 +23,7 @@ class PillEstado extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: FontWeight.bold,
           letterSpacing: 0.4,
           color: color,

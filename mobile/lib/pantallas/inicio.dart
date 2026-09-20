@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import '../formato.dart';
 import '../modelos.dart';
+import '../tema.dart';
 import 'gastos.dart';
 import 'historial.dart';
 import 'registrar_mantenimiento.dart';
@@ -102,7 +103,11 @@ class _InicioPantallaState extends State<InicioPantalla> {
   @override
   Widget build(BuildContext context) {
     if (cargando) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(
+          semanticsLabel: 'Cargando',
+        ),
+      );
     }
 
     if (error != null) {
@@ -132,10 +137,15 @@ class _InicioPantallaState extends State<InicioPantalla> {
                 ),
               ),
               IconButton(
+                tooltip: 'Historial de mantenimientos',
                 onPressed: abrirHistorial,
                 icon: const Icon(Icons.history),
               ),
-              IconButton(onPressed: cargar, icon: const Icon(Icons.refresh)),
+              IconButton(
+                tooltip: 'Actualizar',
+                onPressed: cargar,
+                icon: const Icon(Icons.refresh),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -247,13 +257,13 @@ class _InicioPantallaState extends State<InicioPantalla> {
     String estadoTxt;
 
     if (p == 0) {
-      color = Colors.red;
+      color = rojoEstado;
       estadoTxt = 'VENCIDO';
     } else if (p == 1) {
-      color = Colors.orange.shade800;
+      color = naranjaEstado;
       estadoTxt = 'PROXIMO';
     } else {
-      color = Colors.teal.shade700;
+      color = teal;
       estadoTxt = 'AL DIA';
     }
 
@@ -269,50 +279,57 @@ class _InicioPantallaState extends State<InicioPantalla> {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: vehiculo == null ? null : () => abrirRegistro(item),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(Icons.circle, color: color, size: 16),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        child: Semantics(
+          button: true,
+          label:
+              '${tituloTipo(item.tipo)}, $estadoTxt. ${item.kilometrajes_restantes <= 0 ? 'Pasado por ${item.kilometrajes_restantes.abs()} kilometros' : 'Restan ${item.kilometrajes_restantes} kilometros'}',
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Icon(Icons.circle, color: color, size: 16),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tituloTipo(item.tipo),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text('Proximo a los ${item.proximo_kilometraje} km'),
+                      Text(
+                        item.kilometrajes_restantes <= 0
+                            ? 'Pasado por ${item.kilometrajes_restantes.abs()} km'
+                            : 'Restan ${item.kilometrajes_restantes} km',
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      tituloTipo(item.tipo),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      estadoTxt,
+                      style: TextStyle(color: color, fontWeight: FontWeight.bold),
                     ),
-                    Text('Proximo a los ${item.proximo_kilometraje} km'),
-                    Text(
-                      item.kilometrajes_restantes <= 0
-                          ? 'Pasado por ${item.kilometrajes_restantes.abs()} km'
-                          : 'Restan ${item.kilometrajes_restantes} km',
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: 60,
+                      child: LinearProgressIndicator(
+                        value: barra,
+                        color: color,
+                        backgroundColor: Colors.grey.shade200,
+                        semanticsLabel: 'Avance del intervalo de $estadoTxt',
+                        semanticsValue: '${(barra * 100).round()} por ciento',
+                      ),
                     ),
                   ],
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    estadoTxt,
-                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: 60,
-                    child: LinearProgressIndicator(
-                      value: barra,
-                      color: color,
-                      backgroundColor: Colors.grey.shade200,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 8),
-              Icon(Icons.chevron_right, color: Colors.grey.shade400),
-            ],
+                const SizedBox(width: 8),
+                Icon(Icons.chevron_right, color: Colors.grey.shade400),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'api.dart';
 import 'pantallas/alta_vehiculo.dart';
 import 'pantallas/inicio.dart';
 import 'pantallas/mi_vehiculo.dart';
+import 'tema.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SemanticsBinding.instance.ensureSemantics();
   runApp(const MiApp());
 }
 
@@ -17,7 +21,10 @@ class MiApp extends StatelessWidget {
       title: 'Mantenimiento',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: teal,
+          primary: teal,
+        ),
         useMaterial3: true,
       ),
       home: const Home(),
@@ -69,7 +76,9 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     if (cargando) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: CircularProgressIndicator(semanticsLabel: 'Cargando'),
+        ),
       );
     }
 

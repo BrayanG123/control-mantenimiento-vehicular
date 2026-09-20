@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import '../api.dart';
 import '../modelos.dart';
+import '../tema.dart';
 
 const _teal = Color(0xFF00695C);
-const _muted = Color(0xFF98A3A0);
-const _texto = Color(0xFF34403D);
-const _borde = Color(0xFFCFD8D5);
-const _fondoSuave = Color(0xFFE8F5F2);
-const _grisCaja = Color(0xFFE7ECEA);
-const _errorRojo = Color(0xFFC93D3D);
-const _placeholder = Color(0xFFB0B8B5);
+const _muted = muted;
+const _texto = texto;
+const _borde = borde;
+const _fondoSuave = fondoSuave;
+const _grisCaja = grisCaja;
+const _errorRojo = rojoEstado;
+const _placeholder = placeholder;
 
 class MiVehiculoPantalla extends StatefulWidget {
   const MiVehiculoPantalla({super.key});
@@ -212,6 +213,7 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
               ),
             ),
             IconButton(
+              tooltip: 'Editar vehiculo',
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('editar viene mas adelante')),
@@ -350,18 +352,22 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
           child: Row(
             children: [
               Expanded(
-                child: TextField(
-                  controller: kmCtrl,
-                  focusNode: kmFocus,
-                  keyboardType: TextInputType.number,
-                  style: const TextStyle(fontSize: 17, color: _texto),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    hintText: 'Ej. 12.500',
-                    hintStyle: TextStyle(color: _placeholder, fontSize: 17),
-                    suffixText: 'km',
-                    suffixStyle: TextStyle(color: _muted, fontSize: 14),
+                child: Semantics(
+                  textField: true,
+                  label: 'Kilometraje actual en kilometros',
+                  child: TextField(
+                    controller: kmCtrl,
+                    focusNode: kmFocus,
+                    keyboardType: TextInputType.number,
+                    style: const TextStyle(fontSize: 17, color: _texto),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      hintText: 'Ej. 12.500',
+                      hintStyle: TextStyle(color: _placeholder, fontSize: 17),
+                      suffixText: 'km',
+                      suffixStyle: TextStyle(color: _muted, fontSize: 14),
+                    ),
                   ),
                 ),
               ),
