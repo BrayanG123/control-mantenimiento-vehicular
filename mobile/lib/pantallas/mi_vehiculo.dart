@@ -13,7 +13,9 @@ const _errorRojo = rojoEstado;
 const _placeholder = placeholder;
 
 class MiVehiculoPantalla extends StatefulWidget {
-  const MiVehiculoPantalla({super.key});
+  const MiVehiculoPantalla({super.key, this.onCerrarSesion});
+
+  final VoidCallback? onCerrarSesion;
 
   @override
   State<MiVehiculoPantalla> createState() => _MiVehiculoPantallaState();
@@ -213,6 +215,11 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
               ),
             ),
             IconButton(
+              tooltip: 'Cerrar sesion',
+              onPressed: widget.onCerrarSesion,
+              icon: const Icon(Icons.logout, color: _teal),
+            ),
+            IconButton(
               tooltip: 'Editar vehiculo',
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -224,7 +231,9 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
           ],
         ),
         const SizedBox(height: 8),
-        Container(
+        LayoutBuilder(
+          builder: (context, cons) {
+            final ficha = Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -316,8 +325,11 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 20),
+        );
+
+            final form = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
         const Text(
           'Actualizar kilometraje',
           style: TextStyle(
@@ -398,6 +410,30 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
             onTap: botonApagado || guardando ? null : guardarKm,
           ),
         ),
+              ],
+            );
+
+            if (cons.maxWidth < 600) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ficha,
+                  const SizedBox(height: 20),
+                  form,
+                ],
+              );
+            }
+            final colW = (cons.maxWidth - 16) / 2;
+            return Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                SizedBox(width: colW, child: ficha),
+                SizedBox(width: colW, child: form),
+              ],
+            );
+          },
+        ),
       ],
     );
   }
@@ -464,7 +500,11 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
       label = 'Guardar kilometraje';
     }
 
-    return Material(
+    return Semantics(
+      button: true,
+      enabled: onTap != null,
+      label: label,
+      child: Material(
       color: fondo,
       borderRadius: BorderRadius.circular(24),
       child: InkWell(
@@ -497,6 +537,7 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
