@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import '../formato.dart';
 import '../modelos.dart';
+import '../tema.dart';
 import 'gastos.dart';
 import 'historial.dart';
 import 'registrar_mantenimiento.dart';
@@ -102,7 +103,9 @@ class _InicioPantallaState extends State<InicioPantalla> {
   @override
   Widget build(BuildContext context) {
     if (cargando) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
 
     if (error != null) {
@@ -120,22 +123,33 @@ class _InicioPantallaState extends State<InicioPantalla> {
 
     return RefreshIndicator(
       onRefresh: cargar,
-      child: ListView(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16),
-        children: [
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           Row(
             children: [
-              const Expanded(
-                child: Text(
-                  'Proximo mantenimiento',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Expanded(
+                child: Semantics(
+                  header: true,
+                  child: const Text(
+                    'Proximo mantenimiento',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               IconButton(
+                tooltip: 'Historial de mantenimientos',
                 onPressed: abrirHistorial,
                 icon: const Icon(Icons.history),
               ),
-              IconButton(onPressed: cargar, icon: const Icon(Icons.refresh)),
+              IconButton(
+                tooltip: 'Actualizar',
+                onPressed: cargar,
+                icon: const Icon(Icons.refresh),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -145,17 +159,38 @@ class _InicioPantallaState extends State<InicioPantalla> {
             _cardGastos(),
             const SizedBox(height: 24),
           ],
-          const Text(
-            'Mantenimientos',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          Semantics(
+            header: true,
+            child: const Text(
+              'Mantenimientos',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
           ),
           const SizedBox(height: 16),
-          for (final item in lista!)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: _cardMantenimiento(item),
-            ),
+          LayoutBuilder(
+            builder: (context, cons) {
+              final w = cons.maxWidth;
+              const minCard = 260.0;
+              const gap = 12.0;
+              var cols = 1;
+              if (w >= minCard * 2 + gap) cols = 2;
+              if (w >= minCard * 3 + gap * 2) cols = 3;
+              final cardW = cols == 1 ? w : (w - gap * (cols - 1)) / cols;
+              return Wrap(
+                spacing: gap,
+                runSpacing: 16,
+                children: [
+                  for (final item in lista!)
+                    SizedBox(
+                      width: cardW,
+                      child: _cardMantenimiento(item),
+                    ),
+                ],
+              );
+            },
+          ),
         ],
+        ),
       ),
     );
   }
@@ -166,49 +201,61 @@ class _InicioPantallaState extends State<InicioPantalla> {
         : 'Bs ${fmtMiles(gastos!.total.round())}';
 
     return Card(
-      child: InkWell(
-        onTap: abrirGastos,
-        child: Padding(
+      child: TextButton(
+        onPressed: abrirGastos,
+        style: TextButton.styleFrom(
           padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
+          foregroundColor: texto,
+          alignment: Alignment.centerLeft,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: Row(
+          children: [
+            ExcludeSemantics(
+              child: CircleAvatar(
                 backgroundColor: Colors.teal.shade50,
                 child: Icon(Icons.attach_money, color: Colors.teal.shade700),
               ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Gastos este año',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Gastos este año',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text(
-                monto,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal.shade700,
-                ),
+            ),
+            Text(
+              monto,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.teal.shade700,
               ),
-              const SizedBox(width: 4),
-              Icon(Icons.chevron_right, color: Colors.grey.shade400),
-            ],
-          ),
+            ),
+            const SizedBox(width: 4),
+            ExcludeSemantics(
+              child: Icon(Icons.chevron_right, color: Colors.grey.shade400),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _cardVehiculo(Vehiculo v) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: Colors.teal.shade50,
-              child: Icon(Icons.two_wheeler, color: Colors.teal.shade700),
-            ),
+    return Semantics(
+      label:
+          '${v.marca} ${v.modelo}, placa ${v.placa ?? 'sin placa'}, año ${v.anio}, kilometraje actual ${v.kilometraje_actual}',
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              ExcludeSemantics(
+                child: CircleAvatar(
+                  backgroundColor: Colors.teal.shade50,
+                  child: Icon(Icons.two_wheeler, color: Colors.teal.shade700),
+                ),
+              ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -237,6 +284,7 @@ class _InicioPantallaState extends State<InicioPantalla> {
             ),
           ],
         ),
+        ),
       ),
     );
   }
@@ -247,13 +295,13 @@ class _InicioPantallaState extends State<InicioPantalla> {
     String estadoTxt;
 
     if (p == 0) {
-      color = Colors.red;
+      color = rojoEstado;
       estadoTxt = 'VENCIDO';
     } else if (p == 1) {
-      color = Colors.orange.shade800;
+      color = naranjaEstado;
       estadoTxt = 'PROXIMO';
     } else {
-      color = Colors.teal.shade700;
+      color = teal;
       estadoTxt = 'AL DIA';
     }
 
@@ -267,40 +315,47 @@ class _InicioPantallaState extends State<InicioPantalla> {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: vehiculo == null ? null : () => abrirRegistro(item),
-        child: Padding(
+      child: TextButton(
+        onPressed: vehiculo == null ? null : () => abrirRegistro(item),
+        style: TextButton.styleFrom(
           padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(Icons.circle, color: color, size: 16),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      tituloTipo(item.tipo),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text('Proximo a los ${item.proximo_kilometraje} km'),
-                    Text(
-                      item.kilometrajes_restantes <= 0
-                          ? 'Pasado por ${item.kilometrajes_restantes.abs()} km'
-                          : 'Restan ${item.kilometrajes_restantes} km',
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+          foregroundColor: texto,
+          alignment: Alignment.centerLeft,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: Row(
+          children: [
+            ExcludeSemantics(
+              child: Icon(Icons.circle, color: color, size: 16),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    estadoTxt,
-                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                    tituloTipo(item.tipo),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 8),
-                  SizedBox(
+                  Text('Proximo a los ${item.proximo_kilometraje} km'),
+                  Text(
+                    item.kilometrajes_restantes <= 0
+                        ? 'Pasado por ${item.kilometrajes_restantes.abs()} km'
+                        : 'Restan ${item.kilometrajes_restantes} km',
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  estadoTxt,
+                  style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ExcludeSemantics(
+                  child: SizedBox(
                     width: 60,
                     child: LinearProgressIndicator(
                       value: barra,
@@ -308,12 +363,14 @@ class _InicioPantallaState extends State<InicioPantalla> {
                       backgroundColor: Colors.grey.shade200,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(width: 8),
-              Icon(Icons.chevron_right, color: Colors.grey.shade400),
-            ],
-          ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 8),
+            ExcludeSemantics(
+              child: Icon(Icons.chevron_right, color: Colors.grey.shade400),
+            ),
+          ],
         ),
       ),
     );

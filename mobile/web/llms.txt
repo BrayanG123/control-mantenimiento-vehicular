@@ -1,0 +1,16 @@
+# Control de mantenimiento vehicular
+
+> App para registrar kilometraje, proximos servicios y gastos del vehiculo. Pensada para dueños de moto o auto que hoy anotan en papel o memoria.
+
+## App
+
+- [Inicio](/)
+- [Manifiesto PWA](/manifest.json)
+
+## Flujos
+
+- Consultar que mantenimiento toca
+- Registrar un servicio realizado
+- Consultar historial
+- Revisar gastos del año
+- Gestionar el acceso (sesion local)

@@ -228,6 +228,7 @@ class _GastosPantallaState extends State<GastosPantalla> {
               _chip('todo', 'Todo'),
               const Spacer(),
               IconButton(
+                tooltip: 'Elegir periodo de gastos',
                 onPressed: sheetPeriodo,
                 icon: const Icon(Icons.tune, color: muted),
               ),

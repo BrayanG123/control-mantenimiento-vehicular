@@ -1,0 +1,6 @@
+--- adb starting (pid 1972) ---
+09-20 18:50:34.070  1972  8032 I adb     : main.cpp:65 Android Debug Bridge version 1.0.41
+09-20 18:50:34.070  1972  8032 I adb     : main.cpp:65 Version 37.0.1-15733141
+09-20 18:50:34.070  1972  8032 I adb     : main.cpp:65 Installed as C:\Users\diego\AppData\Local\Android\Sdk\platform-tools\adb.exe
+09-20 18:50:34.070  1972  8032 I adb     : main.cpp:65 Running on Windows 10.0.26200
+09-20 18:50:34.070  1972  8032 I adb     : main.cpp:65 

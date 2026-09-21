@@ -1,46 +1,293 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Control de mantenimiento vehicular: kilometraje, proximos servicios y gastos.">
+  <meta name="theme-color" content="#00695C">
+  <meta name="robots" content="index,follow">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="mobile">
+  <meta name="apple-mobile-web-app-title" content="Mantenimiento">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>mobile</title>
+  <title>Control de mantenimiento vehicular</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body { margin: 0; height: 100%; background: #fff; }
+    #shell {
+      min-height: 100%; display: flex; flex-direction: column; align-items: center;
+      padding: 24px; background: #fff; color: #34403D;
+      font-family: system-ui, sans-serif; box-sizing: border-box;
+    }
+    #shell[hidden] { display: none !important; }
+    .view { display: none; width: 100%; max-width: 364px; flex: 1; flex-direction: column; }
+    .view.on { display: flex; }
+    .grow { flex: 1; }
+    .icon { width: 88px; height: 88px; border-radius: 50%; background: #E8F5F2;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+    h2 { margin: 24px 0 0; font-size: 28px; font-weight: 700; text-align: center; }
+    .lead { margin: 8px 0 20px; font-size: 15px; color: #5A6663; text-align: center; }
+    .cta, .link {
+      width: 100%; height: 48px; border: 0; border-radius: 24px;
+      font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+    }
+    .cta { background: #00695C; color: #fff; }
+    .link { margin-top: 8px; background: transparent; color: #00695C; }
+    .cta:focus-visible, .link:focus-visible, input:focus-visible {
+      outline: 2px solid #00695C; outline-offset: 2px;
+    }
+    label { display: block; font-size: 14px; font-weight: 600; margin: 12px 0 6px; }
+    input {
+      width: 100%; height: 56px; box-sizing: border-box; padding: 0 16px;
+      border: 1px solid #CFD8D5; border-radius: 12px; font-size: 17px; font-family: inherit;
+    }
+    input.bad { border-color: #C93D3D; background: #FEF6F6; }
+    .hint { margin: 6px 0 0; font-size: 13px; color: #5A6663; }
+    .err { margin: 6px 0 0; font-size: 13px; color: #C93D3D; display: flex; gap: 6px; align-items: flex-start; }
+    .top { align-self: flex-start; font-size: 20px; font-weight: 700; margin: 8px 0 4px; }
+    h2.top { margin: 8px 0 4px; text-align: left; }
+    #v-exito h2.top { align-self: center; text-align: center; }
+    @media (min-width: 768px) {
+      body { background: #D7E3DF; }
+      #shell {
+        width: 412px; min-height: 0; height: min(844px, calc(100vh - 32px));
+        margin: 16px auto; border-radius: 24px; box-shadow: 0 8px 24px #0003;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">Control de mantenimiento vehicular</h1>
+  <main id="shell">
+    <section id="v-home" class="view on" aria-labelledby="tit-home">
+      <div class="grow"></div>
+      <div class="icon" aria-hidden="true">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="#00695C"><path d="M14.4 6.2 13 5H9v2h3.1l1.1 1H6.5C4 8 2 10 2 12.5S4 17 6.5 17h.2A3.5 3.5 0 0 0 10 19.5 3.5 3.5 0 0 0 13.5 16h3.2A3.5 3.5 0 0 0 20 19.5 3.5 3.5 0 0 0 23.5 16H22c0-1.7-1.3-3-3-3h-1.2l-3.4-6.8ZM6.5 15A2.5 2.5 0 1 1 9 12.5 2.5 2.5 0 0 1 6.5 15Zm10.8-2L15 8.5h-.2l2.1 4.5ZM20 15a2.5 2.5 0 1 1 2.5-2.5A2.5 2.5 0 0 1 20 15Z"/></svg>
+      </div>
+      <h2 id="tit-home">Mantenimiento</h2>
+      <p class="lead">Kilometraje, proximo servicio y gastos de tu vehiculo.</p>
+      <div class="grow"></div>
+      <button class="cta" type="button" id="btn-ir-login">Iniciar sesion</button>
+      <button class="link" type="button" id="btn-ir-cuenta">Crear cuenta</button>
+    </section>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
+    <section id="v-login" class="view" aria-labelledby="tit-login">
+      <h2 class="top" id="tit-login">Iniciar sesion</h2>
+      <p class="lead" style="text-align:left">Entra para ver el proximo mantenimiento.</p>
+      <form id="f-login">
+        <label for="login-correo">Correo</label>
+        <input id="login-correo" name="correo" type="email" autocomplete="username" placeholder="Ejemplo: mariana@correo.com">
+        <p class="hint" id="login-correo-hint">Ejemplo: mariana@correo.com</p>
+        <p class="err" id="login-correo-err" hidden></p>
+        <label for="login-clave">Contrasena</label>
+        <input id="login-clave" name="clave" type="password" autocomplete="current-password" placeholder="La que usaste al crear la cuenta">
+        <p class="hint" id="login-clave-hint">La que usaste al crear la cuenta</p>
+        <p class="err" id="login-clave-err" hidden></p>
+        <button class="link" type="button" id="btn-ir-olvide" style="text-align:left;padding:0;height:auto;margin:12px 0">Olvide la contrasena</button>
+        <button class="cta" type="submit">Iniciar sesion</button>
+        <button class="link" type="button" id="btn-login-cuenta">Crear cuenta</button>
+      </form>
+    </section>
+
+    <section id="v-cuenta" class="view" aria-labelledby="tit-cuenta">
+      <h2 class="top" id="tit-cuenta">Crear cuenta</h2>
+      <form id="f-cuenta">
+        <label for="cta-correo">Correo</label>
+        <input id="cta-correo" type="email" autocomplete="username">
+        <p class="err" id="cta-correo-err" hidden></p>
+        <label for="cta-clave">Contrasena</label>
+        <input id="cta-clave" type="password" autocomplete="new-password">
+        <p class="err" id="cta-clave-err" hidden></p>
+        <label for="cta-rep">Repetir contrasena</label>
+        <input id="cta-rep" type="password" autocomplete="new-password">
+        <p class="err" id="cta-rep-err" hidden></p>
+        <button class="cta" type="submit" style="margin-top:16px">Crear cuenta</button>
+        <button class="link" type="button" id="btn-cuenta-login">Iniciar sesion</button>
+      </form>
+    </section>
+
+    <section id="v-olvide" class="view" aria-labelledby="tit-olvide">
+      <h2 class="top" id="tit-olvide">Olvide la contrasena</h2>
+      <form id="f-olvide">
+        <label for="olv-correo">Correo</label>
+        <input id="olv-correo" type="email" autocomplete="username">
+        <p class="err" id="olv-correo-err" hidden></p>
+        <button class="cta" type="submit" style="margin-top:16px">Enviar enlace</button>
+        <button class="link" type="button" id="btn-olv-login">Iniciar sesion</button>
+      </form>
+    </section>
+
+    <section id="v-exito" class="view" aria-labelledby="tit-exito">
+      <div class="grow"></div>
+      <h2 class="top" id="tit-exito">Revisa tu correo</h2>
+      <p class="lead" id="exito-txt">Te enviamos el enlace si el correo esta registrado.</p>
+      <div class="grow"></div>
+      <button class="cta" type="button" id="btn-exito-login">Iniciar sesion</button>
+    </section>
+  </main>
+  <script>
+    var DEMO = { 'mariana@correo.com': '123456' };
+    var MAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    function norm(s) { return String(s || '').trim().toLowerCase(); }
+    function cuentas() {
+      try { return Object.assign({}, DEMO, JSON.parse(sessionStorage.getItem('cmv_cuentas') || '{}')); }
+      catch (e) { return Object.assign({}, DEMO); }
+    }
+    function mostrar(id) {
+      document.querySelectorAll('.view').forEach(function (n) { n.classList.toggle('on', n.id === id); });
+      var go = id === 'v-home' ? '' : id.replace('v-', '');
+      var u = new URL(location.href);
+      if (go) { u.searchParams.set('go', go); } else { u.searchParams.delete('go'); }
+      u.hash = '';
+      history.replaceState(null, '', u);
+    }
+    function err(id, msg) {
+      var el = document.getElementById(id);
+      var input = document.getElementById(id.replace('-err', ''));
+      if (!msg) { el.hidden = true; el.textContent = ''; if (input) input.classList.remove('bad'); return; }
+      el.hidden = false;
+      el.innerHTML = '<span aria-hidden="true">!</span><span>' + msg + '</span>';
+      if (input) input.classList.add('bad');
+    }
+    function instalarCortes() {
+      function BreakIterator(locales, options) {
+        this._type = (options && options.type) || 'line';
+        this._text = ''; this._breaks = [0]; this._i = 0; this._cur = 0;
+      }
+      BreakIterator.prototype.adoptText = function (text) {
+        this._text = String(text || '');
+        var breaks = [0];
+        try {
+          var gran = this._type === 'sentence' ? 'sentence' : 'word';
+          var seg = new Intl.Segmenter(undefined, { granularity: gran });
+          for (var part of seg.segment(this._text)) {
+            var end = part.index + part.segment.length;
+            if (end > 0 && end < this._text.length) breaks.push(end);
+          }
+        } catch (e) {}
+        breaks.push(this._text.length);
+        this._breaks = breaks; this._i = 0; this._cur = 0;
+      };
+      BreakIterator.prototype.first = function () { this._i = 0; this._cur = this._breaks[0] || 0; return this._cur; };
+      BreakIterator.prototype.next = function () {
+        this._i += 1;
+        if (this._i >= this._breaks.length) { this._cur = -1; return -1; }
+        this._cur = this._breaks[this._i]; return this._cur;
+      };
+      BreakIterator.prototype.current = function () { return this._cur; };
+      BreakIterator.prototype.breakType = function () { return this._type; };
+      try {
+        Object.defineProperty(Intl, 'v8BreakIterator', {
+          configurable: true, enumerable: false, writable: true, value: BreakIterator
+        });
+      } catch (e) {}
+    }
+    function cargarFlutter() {
+      if (window.__cmvFlutter) return;
+      window.__cmvFlutter = true;
+      instalarCortes();
+      window.addEventListener('flutter-first-frame', function () {
+        var el = document.getElementById('shell');
+        if (el) el.remove();
+        if (!document.getElementById('cmv-main')) {
+          var clip = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
+          var main = document.createElement('main');
+          main.id = 'cmv-main';
+          main.setAttribute('aria-label', 'Contenido principal');
+          main.style.cssText = clip;
+          main.textContent = 'Control de mantenimiento vehicular';
+          document.body.appendChild(main);
+          var nav = document.createElement('nav');
+          nav.id = 'cmv-nav';
+          nav.setAttribute('aria-label', 'Navegacion principal');
+          nav.style.cssText = clip;
+          nav.textContent = 'Inicio, Mi vehiculo';
+          document.body.appendChild(nav);
+        }
+        setTimeout(function () {
+          history.replaceState(null, '', '/');
+        }, 500);
+      });
+      var s = document.createElement('script');
+      s.src = 'flutter_bootstrap.js?v=' + Date.now();
+      s.async = true;
+      document.body.appendChild(s);
+    }
+    window.__cmvLeerCorreo = function () {
+      return window.__cmvCorreo
+        || sessionStorage.getItem('cmv_correo')
+        || document.documentElement.getAttribute('data-cmv-correo')
+        || '';
+    };
+    window.__cmvLimpiarCorreo = function () {
+      try { delete window.__cmvCorreo; } catch (e) { window.__cmvCorreo = ''; }
+      try { sessionStorage.removeItem('cmv_correo'); } catch (e) {}
+      try { document.documentElement.removeAttribute('data-cmv-correo'); } catch (e) {}
+    };
+    function entrarApp(correo) {
+      var c = norm(correo);
+      window.__cmvCorreo = c;
+      sessionStorage.setItem('cmv_correo', c);
+      document.documentElement.setAttribute('data-cmv-correo', c);
+      history.replaceState(null, '', '/?correo=' + encodeURIComponent(c));
+      document.querySelectorAll('.cta').forEach(function (b) {
+        b.disabled = true; b.textContent = 'Cargando...';
+      });
+      cargarFlutter();
+    }
+    document.getElementById('btn-ir-login').onclick = function () { mostrar('v-login'); };
+    document.getElementById('btn-ir-cuenta').onclick = function () { mostrar('v-cuenta'); };
+    document.getElementById('btn-login-cuenta').onclick = function () { mostrar('v-cuenta'); };
+    document.getElementById('btn-cuenta-login').onclick = function () { mostrar('v-login'); };
+    document.getElementById('btn-ir-olvide').onclick = function () { mostrar('v-olvide'); };
+    document.getElementById('btn-olv-login').onclick = function () { mostrar('v-login'); };
+    document.getElementById('btn-exito-login').onclick = function () { mostrar('v-login'); };
+    document.getElementById('f-login').onsubmit = function (e) {
+      e.preventDefault();
+      var correo = document.getElementById('login-correo').value;
+      var clave = document.getElementById('login-clave').value;
+      err('login-correo-err'); err('login-clave-err');
+      if (!correo.trim()) { err('login-correo-err', 'Ingresa un correo. Ejemplo: mariana@correo.com'); return; }
+      if (!MAIL.test(norm(correo))) { err('login-correo-err', 'El correo no tiene formato valido. Ejemplo: mariana@correo.com'); return; }
+      if (!clave) { err('login-clave-err', 'Ingresa la contrasena.'); return; }
+      var guardada = cuentas()[norm(correo)];
+      if (!guardada || guardada !== clave) { err('login-clave-err', 'Correo o contrasena no coinciden.'); return; }
+      entrarApp(correo);
+    };
+    document.getElementById('f-cuenta').onsubmit = function (e) {
+      e.preventDefault();
+      var correo = document.getElementById('cta-correo').value;
+      var clave = document.getElementById('cta-clave').value;
+      var rep = document.getElementById('cta-rep').value;
+      err('cta-correo-err'); err('cta-clave-err'); err('cta-rep-err');
+      if (!correo.trim()) { err('cta-correo-err', 'Ingresa un correo. Ejemplo: mariana@correo.com'); return; }
+      if (!MAIL.test(norm(correo))) { err('cta-correo-err', 'El correo no tiene formato valido. Ejemplo: mariana@correo.com'); return; }
+      if (!clave) { err('cta-clave-err', 'Ingresa la contrasena.'); return; }
+      if (!rep) { err('cta-rep-err', 'Repite la contrasena.'); return; }
+      if (clave !== rep) { err('cta-rep-err', 'Las contrasenas no coinciden.'); return; }
+      var map = cuentas();
+      if (map[norm(correo)]) { err('cta-correo-err', 'Ya hay una cuenta con ese correo.'); return; }
+      map[norm(correo)] = clave;
+      sessionStorage.setItem('cmv_cuentas', JSON.stringify(map));
+      entrarApp(correo);
+    };
+    document.getElementById('f-olvide').onsubmit = function (e) {
+      e.preventDefault();
+      var correo = document.getElementById('olv-correo').value;
+      err('olv-correo-err');
+      if (!correo.trim()) { err('olv-correo-err', 'Ingresa el correo para enviarte el enlace.'); return; }
+      if (!MAIL.test(norm(correo))) { err('olv-correo-err', 'El correo no tiene formato valido. Ejemplo: mariana@correo.com'); return; }
+      document.getElementById('exito-txt').textContent = 'Te enviamos el enlace a ' + norm(correo) + '.';
+      mostrar('v-exito');
+    };
+    var go = new URLSearchParams(location.search).get('go') || location.hash.replace('#', '');
+    if (go === 'login') mostrar('v-login');
+    else if (go === 'cuenta') mostrar('v-cuenta');
+    else if (go === 'olvide') mostrar('v-olvide');
+    else if (go === 'exito') mostrar('v-exito');
+  </script>
 </body>
 </html>
