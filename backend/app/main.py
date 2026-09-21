@@ -1,10 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from app.core.excepciones import OperacionNoPermitida, RecursoNoEncontrado
 from app.database import Base, engine
-from app.routers import vehiculo, mantenimiento
-
-
-
+from app.routers import gastos, mantenimiento, vehiculo
 
 Base.metadata.create_all(bind=engine)
 
@@ -13,13 +13,31 @@ app = FastAPI(title="API de control de mantenimiento vehicular")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(vehiculo.router)
 app.include_router(mantenimiento.router)
+app.include_router(gastos.router)
+
+
+@app.exception_handler(RecursoNoEncontrado)
+def manejar_recurso_no_encontrado(
+    request: Request,
+    error: RecursoNoEncontrado,
+):
+    return JSONResponse(status_code=404, content={"detail": error.mensaje})
+
+
+@app.exception_handler(OperacionNoPermitida)
+def manejar_operacion_no_permitida(
+    request: Request,
+    error: OperacionNoPermitida,
+):
+    return JSONResponse(status_code=400, content={"detail": error.mensaje})
+
 
 @app.get("/")
 def root():

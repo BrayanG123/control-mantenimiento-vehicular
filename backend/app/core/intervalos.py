@@ -1,13 +1,4 @@
-from enum import Enum
-
-
-class TipoMantenimiento(str, Enum):
-    ACEITE = "aceite"
-    LLANTAS = "llantas"
-    FRENOS = "frenos"
-    FILTROS = "filtros"
-    # reparacion, no va en el semaforo de inicio
-    CADENA = "cadena"
+from app.core.tipos import TipoMantenimiento
 
 
 INTERVALOS_KM: dict[TipoMantenimiento, int] = {

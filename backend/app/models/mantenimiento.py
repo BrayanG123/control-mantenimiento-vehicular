@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, Enum as SAEnum
 from sqlalchemy.orm import relationship
 from app.database import Base
-from app.core.intervalos import TipoMantenimiento, INTERVALOS_KM
+from app.core.intervalos import INTERVALOS_KM
+from app.core.tipos import TipoMantenimiento
 
 
 

@@ -15,5 +15,9 @@ class Vehiculo(Base):
     placa  = Column(String,  nullable=False)
     kilometraje_actual = Column(Integer, nullable=False, default=0)
 
-    mantenimientos = relationship("Mantenimiento", back_populates="vehiculo")
+    mantenimientos = relationship(
+        "Mantenimiento",
+        back_populates="vehiculo",
+        cascade="all, delete-orphan",
+    )
 
