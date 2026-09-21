@@ -29,3 +29,23 @@ class SesionResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     usuario: UsuarioResponse
+
+
+class SolicitudRecuperacion(BaseModel):
+    correo: str = Field(min_length=3, max_length=254)
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    @field_validator("correo")
+    @classmethod
+    def validar_correo(cls, correo: str) -> str:
+        return CredencialesUsuario.validar_correo(correo)
+
+
+class RestablecimientoContrasena(BaseModel):
+    token: str = Field(min_length=20, max_length=256)
+    nueva_contrasena: str = Field(min_length=6, max_length=128)
+
+
+class MensajeResponse(BaseModel):
+    mensaje: str

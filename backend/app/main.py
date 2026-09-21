@@ -2,7 +2,11 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.core.excepciones import OperacionNoPermitida, RecursoNoEncontrado
+from app.core.excepciones import (
+    OperacionNoPermitida,
+    RecursoNoEncontrado,
+    ServicioNoDisponible,
+)
 from app.database import preparar_base_de_datos
 from app.routers import autenticacion, gastos, mantenimiento, vehiculo
 
@@ -38,6 +42,14 @@ def manejar_operacion_no_permitida(
     error: OperacionNoPermitida,
 ):
     return JSONResponse(status_code=400, content={"detail": error.mensaje})
+
+
+@app.exception_handler(ServicioNoDisponible)
+def manejar_servicio_no_disponible(
+    request: Request,
+    error: ServicioNoDisponible,
+):
+    return JSONResponse(status_code=503, content={"detail": error.mensaje})
 
 
 @app.get("/")

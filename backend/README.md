@@ -63,3 +63,18 @@ Cada usuario tiene un vehículo y sus propios mantenimientos y gastos. Las
 contraseñas se guardan como hashes `scrypt`; nunca se almacenan ni devuelven en
 texto plano. La duración y la firma de los tokens se configuran con
 `DURACION_TOKEN_MINUTOS` y `CLAVE_SECRETA` en `.env`.
+
+## Recuperación de contraseña con Resend
+
+Configura estas variables en `.env`:
+
+```env
+RESEND_API_KEY=re_tu_clave
+RESEND_REMITENTE=Mantenimiento <correo@tu-dominio-verificado.com>
+URL_MOBILE=http://127.0.0.1:3000
+DURACION_RECUPERACION_MINUTOS=15
+```
+
+`POST /autenticacion/recuperacion` envía el enlace y
+`POST /autenticacion/restablecimiento` guarda la contraseña nueva. El token del
+enlace se almacena como hash, vence y solo puede utilizarse una vez.

@@ -460,6 +460,7 @@ class _OlvideClavePantallaState extends State<OlvideClavePantalla> {
   final correoCtrl = TextEditingController();
   final correoFocus = FocusNode();
   String? errorCorreo;
+  bool enviando = false;
 
   @override
   void initState() {
@@ -477,7 +478,8 @@ class _OlvideClavePantallaState extends State<OlvideClavePantalla> {
     super.dispose();
   }
 
-  void enviar() {
+  Future<void> enviar() async {
+    if (enviando) return;
     final correo = correoCtrl.text;
     if (correo.trim().isEmpty) {
       setState(() {
@@ -494,12 +496,28 @@ class _OlvideClavePantallaState extends State<OlvideClavePantalla> {
       correoFocus.requestFocus();
       return;
     }
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => EnlaceEnviadoPantalla(correo: normalizarCorreo(correo)),
-      ),
-    );
+    setState(() => enviando = true);
+    try {
+      final correoNormalizado = normalizarCorreo(correo);
+      await DependenciasAplicacion.autenticacionApi.solicitarRecuperacion(
+        correoNormalizado,
+      );
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => EnlaceEnviadoPantalla(correo: correoNormalizado),
+        ),
+      );
+    } on ErrorApi catch (error) {
+      if (!mounted) return;
+      setState(() => errorCorreo = error.mensaje);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => errorCorreo = 'No se pudo conectar con el backend.');
+    } finally {
+      if (mounted) setState(() => enviando = false);
+    }
   }
 
   @override
@@ -540,7 +558,10 @@ class _OlvideClavePantallaState extends State<OlvideClavePantalla> {
               onSubmitted: (_) => enviar(),
             ),
             const SizedBox(height: 24),
-            BotonAcceso(label: 'Enviar enlace', onTap: enviar),
+            BotonAcceso(
+              label: enviando ? 'Enviando...' : 'Enviar enlace',
+              onTap: enviando ? null : enviar,
+            ),
           ],
         ),
       ),
@@ -603,6 +624,187 @@ class EnlaceEnviadoPantalla extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class RestablecerContrasenaPantalla extends StatefulWidget {
+  const RestablecerContrasenaPantalla({
+    super.key,
+    required this.token,
+    required this.onFinalizado,
+  });
+
+  final String token;
+  final VoidCallback onFinalizado;
+
+  @override
+  State<RestablecerContrasenaPantalla> createState() =>
+      _RestablecerContrasenaPantallaState();
+}
+
+class _RestablecerContrasenaPantallaState
+    extends State<RestablecerContrasenaPantalla> {
+  final contrasenaCtrl = TextEditingController();
+  final repetirCtrl = TextEditingController();
+  final contrasenaFocus = FocusNode();
+  final repetirFocus = FocusNode();
+  String? errorContrasena;
+  String? errorRepetir;
+  bool enviando = false;
+  bool actualizada = false;
+
+  @override
+  void initState() {
+    super.initState();
+    contrasenaFocus.addListener(() => setState(() {}));
+    repetirFocus.addListener(() => setState(() {}));
+    contrasenaCtrl.addListener(() {
+      if (errorContrasena != null) setState(() => errorContrasena = null);
+    });
+    repetirCtrl.addListener(() {
+      if (errorRepetir != null) setState(() => errorRepetir = null);
+    });
+  }
+
+  @override
+  void dispose() {
+    contrasenaCtrl.dispose();
+    repetirCtrl.dispose();
+    contrasenaFocus.dispose();
+    repetirFocus.dispose();
+    super.dispose();
+  }
+
+  Future<void> guardar() async {
+    if (enviando) return;
+    final contrasena = contrasenaCtrl.text;
+    final repetir = repetirCtrl.text;
+    String? errorNueva;
+    String? errorConfirmacion;
+
+    if (contrasena.length < 6) {
+      errorNueva = 'La contrasena debe tener al menos 6 caracteres.';
+    }
+    if (repetir.isEmpty) {
+      errorConfirmacion = 'Repite la contrasena.';
+    } else if (contrasena != repetir) {
+      errorConfirmacion = 'Las contrasenas no coinciden.';
+    }
+    if (errorNueva != null || errorConfirmacion != null) {
+      setState(() {
+        errorContrasena = errorNueva;
+        errorRepetir = errorConfirmacion;
+      });
+      return;
+    }
+
+    setState(() => enviando = true);
+    try {
+      await DependenciasAplicacion.autenticacionApi.restablecerContrasena(
+        token: widget.token,
+        nuevaContrasena: contrasena,
+      );
+      if (!mounted) return;
+      setState(() => actualizada = true);
+    } on ErrorApi catch (error) {
+      if (!mounted) return;
+      setState(() => errorContrasena = error.mensaje);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => errorContrasena = 'No se pudo conectar con el backend.');
+    } finally {
+      if (mounted) setState(() => enviando = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (actualizada) {
+      return HojaAcceso(
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.check_circle_outline, color: teal, size: 64),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Contrasena actualizada',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: texto,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Ya puedes iniciar sesion con tu nueva contrasena.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: muted),
+                  ),
+                  const SizedBox(height: 24),
+                  BotonAcceso(
+                    label: 'Ir a iniciar sesion',
+                    onTap: widget.onFinalizado,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return HojaAcceso(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          foregroundColor: texto,
+          title: const Text('Elegir contrasena nueva'),
+        ),
+        body: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          children: [
+            const Text(
+              'Ingresa la contrasena que usaras desde ahora.',
+              style: TextStyle(fontSize: 13, color: muted),
+            ),
+            const SizedBox(height: 20),
+            CampoAcceso(
+              etiqueta: 'Contrasena nueva',
+              controller: contrasenaCtrl,
+              focus: contrasenaFocus,
+              error: errorContrasena,
+              ayuda: 'Minimo 6 caracteres',
+              obscure: true,
+              textInputAction: TextInputAction.next,
+              onSubmitted: (_) => repetirFocus.requestFocus(),
+            ),
+            const SizedBox(height: 16),
+            CampoAcceso(
+              etiqueta: 'Repetir contrasena',
+              controller: repetirCtrl,
+              focus: repetirFocus,
+              error: errorRepetir,
+              ayuda: 'Tiene que ser la misma',
+              obscure: true,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => guardar(),
+            ),
+            const SizedBox(height: 24),
+            BotonAcceso(
+              label: enviando ? 'Guardando...' : 'Guardar contrasena',
+              onTap: enviando ? null : guardar,
+            ),
+          ],
         ),
       ),
     );

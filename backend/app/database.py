@@ -22,6 +22,17 @@ Base = declarative_base()
 
 def preparar_base_de_datos() -> None:
     Base.metadata.create_all(bind=engine)
+    columnas_usuario = {
+        columna["name"] for columna in inspect(engine).get_columns("usuarios")
+    }
+    if "version_sesion" not in columnas_usuario:
+        with engine.begin() as conexion:
+            conexion.execute(
+                text(
+                    "ALTER TABLE usuarios "
+                    "ADD COLUMN version_sesion INTEGER NOT NULL DEFAULT 1"
+                )
+            )
     columnas_vehiculo = {
         columna["name"] for columna in inspect(engine).get_columns("vehiculos")
     }

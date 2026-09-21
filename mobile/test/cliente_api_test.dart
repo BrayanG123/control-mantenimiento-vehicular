@@ -38,4 +38,31 @@ void main() {
     expect(sesion.token, 'token-nuevo');
     expect(sesion.usuario.correo, 'mariana@correo.com');
   });
+
+  test('recuperacion solicita correo y envia la contrasena nueva', () async {
+    final rutas = <String>[];
+    final cuerpos = <String>[];
+    final cliente = ClienteApi(
+      urlBase: 'http://api.local',
+      clienteHttp: MockClient((solicitud) async {
+        rutas.add(solicitud.url.path);
+        cuerpos.add(solicitud.body);
+        return http.Response('{"mensaje":"ok"}', 200);
+      }),
+    );
+    final autenticacion = AutenticacionApi(cliente);
+
+    await autenticacion.solicitarRecuperacion('mariana@correo.com');
+    await autenticacion.restablecerContrasena(
+      token: 'token-de-recuperacion-valido',
+      nuevaContrasena: 'nueva-clave',
+    );
+
+    expect(rutas, [
+      '/autenticacion/recuperacion',
+      '/autenticacion/restablecimiento',
+    ]);
+    expect(cuerpos.first, contains('mariana@correo.com'));
+    expect(cuerpos.last, contains('nueva_contrasena'));
+  });
 }

@@ -12,8 +12,21 @@ import 'screens/inicio.dart';
 import 'screens/mi_vehiculo.dart';
 import 'state/sesion_aplicacion.dart';
 
-class MiApp extends StatelessWidget {
+class MiApp extends StatefulWidget {
   const MiApp({super.key});
+
+  @override
+  State<MiApp> createState() => _MiAppState();
+}
+
+class _MiAppState extends State<MiApp> {
+  late String? tokenRecuperacion;
+
+  @override
+  void initState() {
+    super.initState();
+    tokenRecuperacion = Uri.base.queryParameters['token_recuperacion'];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +47,12 @@ class MiApp extends StatelessWidget {
       builder: (context, child) {
         return MarcoMovil(child: child ?? const SizedBox.shrink());
       },
-      home: const Home(),
+      home: tokenRecuperacion == null
+          ? const Home()
+          : RestablecerContrasenaPantalla(
+              token: tokenRecuperacion!,
+              onFinalizado: () => setState(() => tokenRecuperacion = null),
+            ),
     );
   }
 }

@@ -10,3 +10,7 @@ class RecursoNoEncontrado(ErrorDominio):
 
 class OperacionNoPermitida(ErrorDominio):
     pass
+
+
+class ServicioNoDisponible(ErrorDominio):
+    pass

@@ -1,5 +1,7 @@
 import unittest
 from datetime import date
+from unittest.mock import patch
+from urllib.parse import parse_qs, urlparse
 
 from pydantic import ValidationError
 from sqlalchemy import create_engine
@@ -17,6 +19,7 @@ from app.schemas.vehiculo import VehiculoCreate
 from app.services import (
     gastos_service,
     mantenimiento_service,
+    recuperacion_service,
     usuario_service,
     vehiculo_service,
 )
@@ -152,13 +155,54 @@ class ServiciosTest(unittest.TestCase):
             )
 
     def test_token_identifica_al_usuario_que_inicio_sesion(self):
-        token = crear_token_acceso(self.usuario.id)
+        token = crear_token_acceso(
+            self.usuario.id,
+            self.usuario.version_sesion,
+        )
 
         self.assertEqual(
             obtener_usuario_id_desde_token(token),
             self.usuario.id,
         )
         self.assertIsNone(obtener_usuario_id_desde_token(f"{token}alterado"))
+
+    @patch("app.services.recuperacion_service.enviar_enlace_recuperacion")
+    def test_recuperacion_cambia_contrasena_y_usa_token_una_vez(self, enviar):
+        recuperacion_service.solicitar_recuperacion(
+            self.db,
+            "mariana@correo.com",
+        )
+        enlace = enviar.call_args.args[1]
+        token = parse_qs(urlparse(enlace).query)["token_recuperacion"][0]
+
+        recuperacion_service.restablecer_contrasena(
+            self.db,
+            token,
+            "nueva-clave",
+        )
+        sesion_anterior = usuario_service.autenticar_usuario(
+            self.db,
+            CredencialesUsuario(
+                correo="mariana@correo.com",
+                contrasena="123456",
+            ),
+        )
+        sesion_nueva = usuario_service.autenticar_usuario(
+            self.db,
+            CredencialesUsuario(
+                correo="mariana@correo.com",
+                contrasena="nueva-clave",
+            ),
+        )
+
+        self.assertIsNone(sesion_anterior)
+        self.assertIsNotNone(sesion_nueva)
+        with self.assertRaises(OperacionNoPermitida):
+            recuperacion_service.restablecer_contrasena(
+                self.db,
+                token,
+                "otra-clave",
+            )
 
     def test_vehiculos_de_usuarios_distintos_no_se_mezclan(self):
         self.registrar_vehiculo()
@@ -179,6 +223,8 @@ class ServiciosTest(unittest.TestCase):
         self.assertIn("/autenticacion/registro", rutas)
         self.assertIn("/autenticacion/inicio-sesion", rutas)
         self.assertIn("/autenticacion/sesion", rutas)
+        self.assertIn("/autenticacion/recuperacion", rutas)
+        self.assertIn("/autenticacion/restablecimiento", rutas)
         self.assertIn("/vehiculo/", rutas)
         self.assertIn("/vehiculo/kilometraje", rutas)
         self.assertIn("/mantenimiento/", rutas)

@@ -27,4 +27,20 @@ class AutenticacionApi {
     }, incluirToken: false);
     return SesionAutenticada.fromJson(respuesta as Map<String, dynamic>);
   }
+
+  Future<void> solicitarRecuperacion(String correo) async {
+    await _clienteApi.enviar('/autenticacion/recuperacion', {
+      'correo': correo,
+    }, incluirToken: false);
+  }
+
+  Future<void> restablecerContrasena({
+    required String token,
+    required String nuevaContrasena,
+  }) async {
+    await _clienteApi.enviar('/autenticacion/restablecimiento', {
+      'token': token,
+      'nueva_contrasena': nuevaContrasena,
+    }, incluirToken: false);
+  }
 }

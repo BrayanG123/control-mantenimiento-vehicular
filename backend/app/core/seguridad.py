@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import json
 import secrets
+from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
 from app.config import settings
@@ -47,12 +48,24 @@ def verificar_contrasena(contrasena: str, hash_guardado: str) -> bool:
     return hmac.compare_digest(clave_recibida, clave_esperada)
 
 
-def crear_token_acceso(usuario_id: int) -> str:
+@dataclass(frozen=True)
+class DatosTokenAcceso:
+    usuario_id: int
+    version_sesion: int
+
+
+def crear_token_acceso(usuario_id: int, version_sesion: int = 1) -> str:
     encabezado = _codificar_json({"alg": "HS256", "typ": "JWT"})
     expiracion = datetime.now(UTC) + timedelta(
         minutes=settings.duracion_token_minutos
     )
-    contenido = _codificar_json({"sub": str(usuario_id), "exp": int(expiracion.timestamp())})
+    contenido = _codificar_json(
+        {
+            "sub": str(usuario_id),
+            "exp": int(expiracion.timestamp()),
+            "ver": version_sesion,
+        }
+    )
     mensaje = f"{encabezado}.{contenido}".encode()
     firma = hmac.new(
         settings.clave_secreta.encode(),
@@ -62,7 +75,7 @@ def crear_token_acceso(usuario_id: int) -> str:
     return f"{encabezado}.{contenido}.{_codificar(firma)}"
 
 
-def obtener_usuario_id_desde_token(token: str) -> int | None:
+def obtener_datos_desde_token(token: str) -> DatosTokenAcceso | None:
     partes = token.split(".")
     if len(partes) != 3:
         return None
@@ -78,9 +91,25 @@ def obtener_usuario_id_desde_token(token: str) -> int | None:
         datos = json.loads(_decodificar(contenido))
         if int(datos["exp"]) <= int(datetime.now(UTC).timestamp()):
             return None
-        return int(datos["sub"])
+        return DatosTokenAcceso(
+            usuario_id=int(datos["sub"]),
+            version_sesion=int(datos.get("ver", 1)),
+        )
     except (KeyError, TypeError, ValueError, json.JSONDecodeError):
         return None
+
+
+def obtener_usuario_id_desde_token(token: str) -> int | None:
+    datos = obtener_datos_desde_token(token)
+    return datos.usuario_id if datos is not None else None
+
+
+def crear_token_recuperacion() -> str:
+    return secrets.token_urlsafe(32)
+
+
+def crear_hash_token(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()
 
 
 def _codificar(valor: bytes) -> str:

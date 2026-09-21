@@ -36,7 +36,7 @@ Authorization: Bearer <token>
 Inicia primero el backend en el puerto `8000`. Luego, desde `mobile/`:
 
 ```bash
-flutter run -d chrome --dart-define=API_URL=http://127.0.0.1:8000
+flutter run -d chrome --web-port 3000 --dart-define=API_URL=http://127.0.0.1:8000
 ```
 
 ## Verificación
