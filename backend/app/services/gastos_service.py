@@ -11,8 +11,9 @@ from app.services.vehiculo_service import obtener_vehiculo
 def obtener_resumen_gastos(
     db: Session,
     periodo: PeriodoGastos,
+    usuario_id: int,
 ) -> ResumenGastos:
-    vehiculo = obtener_vehiculo(db)
+    vehiculo = obtener_vehiculo(db, usuario_id)
     fecha_actual = date.today()
     fecha_inicial = obtener_fecha_inicial(periodo, fecha_actual)
 

@@ -9,34 +9,54 @@ class ClienteApi {
   ClienteApi({
     http.Client? clienteHttp,
     this.urlBase = ConfiguracionApi.urlBase,
-  }) : _clienteHttp = clienteHttp ?? http.Client();
+    String? Function()? obtenerToken,
+  }) : _clienteHttp = clienteHttp ?? http.Client(),
+       _obtenerToken = obtenerToken ?? _sinToken;
 
   final http.Client _clienteHttp;
   final String urlBase;
+  final String? Function() _obtenerToken;
 
-  Future<dynamic> obtener(String ruta) async {
+  Future<dynamic> obtener(String ruta, {bool incluirToken = true}) async {
     final respuesta = await _clienteHttp
-        .get(Uri.parse('$urlBase$ruta'))
+        .get(
+          Uri.parse('$urlBase$ruta'),
+          headers: _encabezados(incluirToken: incluirToken),
+        )
         .timeout(const Duration(seconds: 8));
     return _procesarRespuesta(respuesta);
   }
 
-  Future<dynamic> enviar(String ruta, Map<String, dynamic> cuerpo) async {
+  Future<dynamic> enviar(
+    String ruta,
+    Map<String, dynamic> cuerpo, {
+    bool incluirToken = true,
+  }) async {
     final respuesta = await _clienteHttp
         .post(
           Uri.parse('$urlBase$ruta'),
-          headers: const {'Content-Type': 'application/json'},
+          headers: _encabezados(
+            incluirToken: incluirToken,
+            incluirContenidoJson: true,
+          ),
           body: jsonEncode(cuerpo),
         )
         .timeout(const Duration(seconds: 8));
     return _procesarRespuesta(respuesta);
   }
 
-  Future<dynamic> actualizar(String ruta, Map<String, dynamic> cuerpo) async {
+  Future<dynamic> actualizar(
+    String ruta,
+    Map<String, dynamic> cuerpo, {
+    bool incluirToken = true,
+  }) async {
     final respuesta = await _clienteHttp
         .patch(
           Uri.parse('$urlBase$ruta'),
-          headers: const {'Content-Type': 'application/json'},
+          headers: _encabezados(
+            incluirToken: incluirToken,
+            incluirContenidoJson: true,
+          ),
           body: jsonEncode(cuerpo),
         )
         .timeout(const Duration(seconds: 8));
@@ -58,4 +78,17 @@ class ClienteApi {
 
     throw ErrorApi(mensaje, codigoEstado: respuesta.statusCode);
   }
+
+  Map<String, String> _encabezados({
+    required bool incluirToken,
+    bool incluirContenidoJson = false,
+  }) {
+    final token = _obtenerToken();
+    return {
+      if (incluirContenidoJson) 'Content-Type': 'application/json',
+      if (incluirToken && token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
+  static String? _sinToken() => null;
 }

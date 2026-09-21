@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 from app.config import settings
 
@@ -18,6 +18,17 @@ SessionLocal = sessionmaker(
 )
 
 Base = declarative_base()
+
+
+def preparar_base_de_datos() -> None:
+    Base.metadata.create_all(bind=engine)
+    columnas_vehiculo = {
+        columna["name"] for columna in inspect(engine).get_columns("vehiculos")
+    }
+    if "usuario_id" not in columnas_vehiculo:
+        with engine.begin() as conexion:
+            conexion.execute(text("ALTER TABLE vehiculos ADD COLUMN usuario_id INTEGER"))
+
 
 def get_db():
     db = SessionLocal()

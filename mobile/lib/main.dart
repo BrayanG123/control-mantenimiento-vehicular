@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'app.dart';
-import 'data/servicio_sesion_demo.dart';
+import 'state/sesion_aplicacion.dart';
 
 export 'app.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  hidratarSesionDemoAlArranque();
+  SesionAplicacion.hidratarAlArranque();
   runApp(const MiApp());
 }

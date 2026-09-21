@@ -4,12 +4,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/dependencies/dependencias_aplicacion.dart';
 import 'core/layout/marco_movil.dart';
+import 'core/network/error_api.dart';
 import 'core/theme/tema_aplicacion.dart';
-import 'data/servicio_sesion_demo.dart';
 import 'screens/acceso.dart';
 import 'screens/alta_vehiculo.dart';
 import 'screens/inicio.dart';
 import 'screens/mi_vehiculo.dart';
+import 'state/sesion_aplicacion.dart';
 
 class MiApp extends StatelessWidget {
   const MiApp({super.key});
@@ -54,8 +55,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    hidratarSesionDemoAlArranque();
-    if (ServicioSesionDemo.haySesion) {
+    if (SesionAplicacion.haySesion) {
       chequear();
     } else {
       cargando = false;
@@ -64,7 +64,7 @@ class _HomeState extends State<Home> {
 
   VoidCallback get _alSesion => () {
     Navigator.of(context).popUntil((route) => route.isFirst);
-    setState(() {});
+    chequear();
   };
 
   Future<void> chequear() async {
@@ -78,9 +78,24 @@ class _HomeState extends State<Home> {
         hayVehiculo = v != null;
         cargando = false;
       });
-    } catch (error) {
+    } on ErrorApi catch (error) {
+      if (error.codigoEstado == 401) {
+        SesionAplicacion.cerrar();
+        setState(() {
+          cargando = false;
+          hayVehiculo = false;
+          errorRed = null;
+        });
+        return;
+      }
       setState(() {
-        errorRed = error.toString();
+        errorRed = error.mensaje;
+        hayVehiculo = false;
+        cargando = false;
+      });
+    } catch (_) {
+      setState(() {
+        errorRed = 'No se pudo conectar con el backend';
         hayVehiculo = false;
         cargando = false;
       });
@@ -89,7 +104,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    if (!ServicioSesionDemo.haySesion) {
+    if (!SesionAplicacion.haySesion) {
       return BienvenidaPantalla(onSesion: _alSesion);
     }
 
@@ -145,7 +160,7 @@ class _HomeState extends State<Home> {
       const InicioPantalla(),
       MiVehiculoPantalla(
         onCerrarSesion: () {
-          ServicioSesionDemo.cerrar();
+          SesionAplicacion.cerrar();
           setState(() {
             tab = 0;
           });

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../core/dependencies/dependencias_aplicacion.dart';
 import '../core/layout/marco_movil.dart';
+import '../core/network/error_api.dart';
 import '../core/theme/tema_aplicacion.dart';
-import '../data/servicio_sesion_demo.dart';
+import '../core/utils/validacion_correo.dart';
+import '../state/sesion_aplicacion.dart';
 
 class BienvenidaPantalla extends StatelessWidget {
   const BienvenidaPantalla({super.key, required this.onSesion});
@@ -102,6 +105,7 @@ class _IniciarSesionPantallaState extends State<IniciarSesionPantalla> {
   final claveFocus = FocusNode();
   String? errorCorreo;
   String? errorClave;
+  bool enviando = false;
 
   @override
   void initState() {
@@ -125,7 +129,8 @@ class _IniciarSesionPantallaState extends State<IniciarSesionPantalla> {
     super.dispose();
   }
 
-  void enviar() {
+  Future<void> enviar() async {
+    if (enviando) return;
     final correo = correoCtrl.text;
     final clave = claveCtrl.text;
     String? errCorreo;
@@ -133,12 +138,14 @@ class _IniciarSesionPantallaState extends State<IniciarSesionPantalla> {
 
     if (correo.trim().isEmpty) {
       errCorreo = 'Ingresa un correo. Ejemplo: mariana@correo.com';
-    } else if (!ServicioSesionDemo.correoConFormato(correo)) {
+    } else if (!correoTieneFormatoValido(correo)) {
       errCorreo =
           'El correo no tiene formato valido. Ejemplo: mariana@correo.com';
     }
     if (clave.isEmpty) {
       errClave = 'Ingresa la contrasena.';
+    } else if (clave.length < 6) {
+      errClave = 'La contrasena debe tener al menos 6 caracteres.';
     }
 
     if (errCorreo != null || errClave != null) {
@@ -149,13 +156,27 @@ class _IniciarSesionPantallaState extends State<IniciarSesionPantalla> {
       return;
     }
 
-    final fallo = ServicioSesionDemo.iniciar(correo, clave);
-    if (fallo != null) {
-      setState(() => errorClave = fallo);
+    setState(() => enviando = true);
+    try {
+      final sesion = await DependenciasAplicacion.autenticacionApi
+          .iniciarSesion(correo: normalizarCorreo(correo), contrasena: clave);
+      SesionAplicacion.iniciar(sesion);
+      if (!mounted) return;
+      widget.onSesion();
+    } on ErrorApi catch (error) {
+      if (!mounted) return;
+      setState(() {
+        errorClave = error.codigoEstado == 401
+            ? 'Correo o contrasena no coinciden.'
+            : error.mensaje;
+      });
       claveFocus.requestFocus();
-      return;
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => errorClave = 'No se pudo conectar con el backend.');
+    } finally {
+      if (mounted) setState(() => enviando = false);
     }
-    widget.onSesion();
   }
 
   @override
@@ -222,7 +243,10 @@ class _IniciarSesionPantallaState extends State<IniciarSesionPantalla> {
               ),
             ),
             const SizedBox(height: 8),
-            BotonAcceso(label: 'Iniciar sesion', onTap: enviar),
+            BotonAcceso(
+              label: enviando ? 'Iniciando sesion...' : 'Iniciar sesion',
+              onTap: enviando ? null : enviar,
+            ),
             TextButton(
               onPressed: () {
                 Navigator.push(
@@ -261,6 +285,7 @@ class _CrearCuentaPantallaState extends State<CrearCuentaPantalla> {
   String? errorCorreo;
   String? errorClave;
   String? errorRepetir;
+  bool enviando = false;
 
   @override
   void initState() {
@@ -290,7 +315,8 @@ class _CrearCuentaPantallaState extends State<CrearCuentaPantalla> {
     super.dispose();
   }
 
-  void enviar() {
+  Future<void> enviar() async {
+    if (enviando) return;
     final correo = correoCtrl.text;
     final clave = claveCtrl.text;
     final repetir = repetirCtrl.text;
@@ -300,12 +326,14 @@ class _CrearCuentaPantallaState extends State<CrearCuentaPantalla> {
 
     if (correo.trim().isEmpty) {
       errCorreo = 'Ingresa un correo. Ejemplo: mariana@correo.com';
-    } else if (!ServicioSesionDemo.correoConFormato(correo)) {
+    } else if (!correoTieneFormatoValido(correo)) {
       errCorreo =
           'El correo no tiene formato valido. Ejemplo: mariana@correo.com';
     }
     if (clave.isEmpty) {
       errClave = 'Ingresa la contrasena.';
+    } else if (clave.length < 6) {
+      errClave = 'La contrasena debe tener al menos 6 caracteres.';
     }
     if (repetir.isEmpty) {
       errRepetir = 'Repite la contrasena.';
@@ -329,13 +357,25 @@ class _CrearCuentaPantallaState extends State<CrearCuentaPantalla> {
       return;
     }
 
-    final fallo = ServicioSesionDemo.crear(correo, clave);
-    if (fallo != null) {
-      setState(() => errorCorreo = fallo);
+    setState(() => enviando = true);
+    try {
+      final sesion = await DependenciasAplicacion.autenticacionApi.registrar(
+        correo: normalizarCorreo(correo),
+        contrasena: clave,
+      );
+      SesionAplicacion.iniciar(sesion);
+      if (!mounted) return;
+      widget.onSesion();
+    } on ErrorApi catch (error) {
+      if (!mounted) return;
+      setState(() => errorCorreo = error.mensaje);
       correoFocus.requestFocus();
-      return;
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => errorCorreo = 'No se pudo conectar con el backend.');
+    } finally {
+      if (mounted) setState(() => enviando = false);
     }
-    widget.onSesion();
   }
 
   @override
@@ -398,7 +438,10 @@ class _CrearCuentaPantallaState extends State<CrearCuentaPantalla> {
               onSubmitted: (_) => enviar(),
             ),
             const SizedBox(height: 24),
-            BotonAcceso(label: 'Crear cuenta', onTap: enviar),
+            BotonAcceso(
+              label: enviando ? 'Creando cuenta...' : 'Crear cuenta',
+              onTap: enviando ? null : enviar,
+            ),
           ],
         ),
       ),
@@ -443,7 +486,7 @@ class _OlvideClavePantallaState extends State<OlvideClavePantalla> {
       correoFocus.requestFocus();
       return;
     }
-    if (!ServicioSesionDemo.correoConFormato(correo)) {
+    if (!correoTieneFormatoValido(correo)) {
       setState(() {
         errorCorreo =
             'El correo no tiene formato valido. Ejemplo: mariana@correo.com';
@@ -454,9 +497,7 @@ class _OlvideClavePantallaState extends State<OlvideClavePantalla> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => EnlaceEnviadoPantalla(
-          correo: ServicioSesionDemo.normalizar(correo),
-        ),
+        builder: (_) => EnlaceEnviadoPantalla(correo: normalizarCorreo(correo)),
       ),
     );
   }
@@ -705,7 +746,7 @@ class BotonAcceso extends StatelessWidget {
   const BotonAcceso({super.key, required this.label, required this.onTap});
 
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

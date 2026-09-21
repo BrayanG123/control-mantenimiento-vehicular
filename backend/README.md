@@ -31,7 +31,7 @@ Registrar un mantenimiento también actualiza el kilometraje del vehículo cuand
 ## Ejecución
 
 ```bash
-uvicorn app.main:app --reload --port 8001
+uvicorn app.main:app --reload --port 8000
 ```
 
 ## Pruebas
@@ -39,3 +39,27 @@ uvicorn app.main:app --reload --port 8001
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+## Autenticación
+
+Un usuario se registra con `POST /autenticacion/registro` y luego puede iniciar
+sesión con `POST /autenticacion/inicio-sesion`. Ambas rutas reciben este cuerpo:
+
+```json
+{
+  "correo": "mariana@correo.com",
+  "contrasena": "123456"
+}
+```
+
+La respuesta contiene `access_token`. Las rutas de vehículo, mantenimiento y
+gastos requieren enviar ese valor en el encabezado:
+
+```text
+Authorization: Bearer <access_token>
+```
+
+Cada usuario tiene un vehículo y sus propios mantenimientos y gastos. Las
+contraseñas se guardan como hashes `scrypt`; nunca se almacenan ni devuelven en
+texto plano. La duración y la firma de los tokens se configuran con
+`DURACION_TOKEN_MINUTOS` y `CLAVE_SECRETA` en `.env`.

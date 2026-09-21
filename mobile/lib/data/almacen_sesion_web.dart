@@ -1,26 +1,23 @@
 import 'package:web/web.dart' as web;
 
-String? correoDesdeHtml() {
+String? tokenDesdeAlmacen() {
   try {
-    final guardado = web.window.sessionStorage.getItem('cmv_correo');
+    final guardado = web.window.localStorage.getItem('cmv_token');
     if (guardado != null && guardado.trim().isNotEmpty) {
       return guardado.trim();
-    }
-  } catch (_) {}
-  try {
-    final attr = web.document.documentElement?.getAttribute('data-cmv-correo');
-    if (attr != null && attr.trim().isNotEmpty) {
-      return attr.trim();
     }
   } catch (_) {}
   return null;
 }
 
-void limpiarSesionWeb() {
+void guardarTokenEnAlmacen(String token) {
   try {
-    web.window.sessionStorage.removeItem('cmv_correo');
+    web.window.localStorage.setItem('cmv_token', token);
   } catch (_) {}
+}
+
+void limpiarAlmacenSesion() {
   try {
-    web.document.documentElement?.removeAttribute('data-cmv-correo');
+    web.window.localStorage.removeItem('cmv_token');
   } catch (_) {}
 }

@@ -1,46 +1,42 @@
-# Aplicación móvil
+# Aplicación mobile
 
-Aplicación Flutter para consultar el vehículo, registrar mantenimientos, revisar el historial y visualizar gastos.
+Aplicación Flutter para registrar y consultar el mantenimiento de un vehículo.
 
 ## Organización
 
 ```text
 lib/
-├── main.dart
-├── app.dart
-├── core/
-│   ├── config/
-│   ├── dependencies/
-│   ├── layout/
-│   ├── network/
-│   ├── theme/
-│   └── utils/
-├── data/
-├── models/
-├── screens/
-├── shared/widgets/
-└── state/
+├── core/       configuración, red y utilidades
+├── data/       rutas de la API y almacenamiento de sesión
+├── models/     datos que recibe y usa el mobile
+├── screens/    pantallas y estado de formularios
+├── shared/     widgets reutilizables
+└── state/      sesión y controladores de carga
 ```
 
-- `core`: configuración y recursos generales de la aplicación.
-- `data`: comunicación con la API y sesión temporal de demostración.
-- `models`: representación de los datos utilizados por el mobile.
-- `screens`: pantallas y estado exclusivo de formularios.
-- `shared/widgets`: componentes visuales reutilizables.
-- `state`: controladores de carga, datos y errores.
+Las pantallas validan entradas y presentan resultados. Las clases de `data`
+conocen las rutas HTTP. `SesionAplicacion` conserva el token de la sesión y
+`ClienteApi` lo envía automáticamente en las rutas protegidas.
 
-## Responsabilidades
+## Autenticación
 
-Las pantallas presentan datos y capturan entradas. Los controladores coordinan el estado asíncrono. Las clases de `data` conocen las rutas HTTP. Los modelos convierten el JSON del backend a nombres propios de Dart.
+El registro usa `POST /autenticacion/registro` y el inicio de sesión usa
+`POST /autenticacion/inicio-sesion`. En Chrome, el token se guarda en
+`localStorage`, por lo que se conserva al recargar la página. Cerrar sesión lo
+elimina.
 
-La sesión actual es una implementación local de demostración y se encuentra identificada como `ServicioSesionDemo`.
+Las solicitudes de vehículo, mantenimiento y gastos incluyen:
 
-## Configuración de la API
+```text
+Authorization: Bearer <token>
+```
 
-La URL predeterminada es `http://127.0.0.1:8001`. Puede cambiarse al ejecutar o compilar la aplicación:
+## Ejecutar en Chrome
+
+Inicia primero el backend en el puerto `8000`. Luego, desde `mobile/`:
 
 ```bash
-flutter run --dart-define=API_URL=http://10.0.2.2:8001
+flutter run -d chrome --dart-define=API_URL=http://127.0.0.1:8000
 ```
 
 ## Verificación

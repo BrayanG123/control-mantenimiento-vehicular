@@ -1,3 +1,5 @@
-String? correoDesdeHtml() => null;
+String? tokenDesdeAlmacen() => null;
 
-void limpiarSesionWeb() {}
+void guardarTokenEnAlmacen(String token) {}
+
+void limpiarAlmacenSesion() {}

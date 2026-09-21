@@ -5,18 +5,31 @@ from app.models.vehiculo import Vehiculo
 from app.schemas.vehiculo import VehiculoCreate
 
 
-def obtener_vehiculo(db: Session) -> Vehiculo:
-    vehiculo = db.query(Vehiculo).first()
+def obtener_vehiculo(db: Session, usuario_id: int) -> Vehiculo:
+    vehiculo = (
+        db.query(Vehiculo)
+        .filter(Vehiculo.usuario_id == usuario_id)
+        .first()
+    )
     if vehiculo is None:
         raise RecursoNoEncontrado("No existe un vehículo registrado")
     return vehiculo
 
 
-def registrar_vehiculo(db: Session, datos: VehiculoCreate) -> Vehiculo:
-    if db.query(Vehiculo).first() is not None:
+def registrar_vehiculo(
+    db: Session,
+    datos: VehiculoCreate,
+    usuario_id: int,
+) -> Vehiculo:
+    vehiculo_existente = (
+        db.query(Vehiculo)
+        .filter(Vehiculo.usuario_id == usuario_id)
+        .first()
+    )
+    if vehiculo_existente is not None:
         raise OperacionNoPermitida("Ya existe un vehículo registrado")
 
-    vehiculo = Vehiculo(**datos.model_dump())
+    vehiculo = Vehiculo(**datos.model_dump(), usuario_id=usuario_id)
     db.add(vehiculo)
     db.commit()
     db.refresh(vehiculo)
@@ -26,8 +39,9 @@ def registrar_vehiculo(db: Session, datos: VehiculoCreate) -> Vehiculo:
 def actualizar_kilometraje(
     db: Session,
     nuevo_kilometraje: int,
+    usuario_id: int,
 ) -> Vehiculo:
-    vehiculo = obtener_vehiculo(db)
+    vehiculo = obtener_vehiculo(db, usuario_id)
     if nuevo_kilometraje <= vehiculo.kilometraje_actual:
         raise OperacionNoPermitida(
             "El nuevo kilometraje debe ser mayor al kilometraje actual"

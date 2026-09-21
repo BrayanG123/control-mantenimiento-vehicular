@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.excepciones import OperacionNoPermitida, RecursoNoEncontrado
-from app.database import Base, engine
-from app.routers import gastos, mantenimiento, vehiculo
+from app.database import preparar_base_de_datos
+from app.routers import autenticacion, gastos, mantenimiento, vehiculo
 
-Base.metadata.create_all(bind=engine)
+preparar_base_de_datos()
 
 app = FastAPI(title="API de control de mantenimiento vehicular")
 
@@ -18,6 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(autenticacion.router)
 app.include_router(vehiculo.router)
 app.include_router(mantenimiento.router)
 app.include_router(gastos.router)

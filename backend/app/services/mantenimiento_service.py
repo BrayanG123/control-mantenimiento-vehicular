@@ -14,8 +14,9 @@ from app.services.vehiculo_service import obtener_vehiculo
 def registrar_mantenimiento(
     db: Session,
     datos: MantenimientoCreate,
+    usuario_id: int,
 ) -> Mantenimiento:
-    vehiculo = obtener_vehiculo(db)
+    vehiculo = obtener_vehiculo(db, usuario_id)
     mantenimiento = Mantenimiento(
         **datos.model_dump(),
         vehiculo_id=vehiculo.id,
@@ -30,8 +31,8 @@ def registrar_mantenimiento(
     return mantenimiento
 
 
-def obtener_historial(db: Session) -> list[Mantenimiento]:
-    vehiculo = obtener_vehiculo(db)
+def obtener_historial(db: Session, usuario_id: int) -> list[Mantenimiento]:
+    vehiculo = obtener_vehiculo(db, usuario_id)
     return (
         db.query(Mantenimiento)
         .filter(Mantenimiento.vehiculo_id == vehiculo.id)
@@ -40,8 +41,11 @@ def obtener_historial(db: Session) -> list[Mantenimiento]:
     )
 
 
-def obtener_proximos(db: Session) -> list[ProximoMantenimientoItem]:
-    vehiculo = obtener_vehiculo(db)
+def obtener_proximos(
+    db: Session,
+    usuario_id: int,
+) -> list[ProximoMantenimientoItem]:
+    vehiculo = obtener_vehiculo(db, usuario_id)
     return calcular_proximos(
         db,
         vehiculo.id,
@@ -49,10 +53,13 @@ def obtener_proximos(db: Session) -> list[ProximoMantenimientoItem]:
     )
 
 
-def obtener_pendientes(db: Session) -> list[ProximoMantenimientoItem]:
+def obtener_pendientes(
+    db: Session,
+    usuario_id: int,
+) -> list[ProximoMantenimientoItem]:
     return [
         mantenimiento
-        for mantenimiento in obtener_proximos(db)
+        for mantenimiento in obtener_proximos(db, usuario_id)
         if mantenimiento.estado != EstadoMantenimiento.AL_DIA
     ]
 
