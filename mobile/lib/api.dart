@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 import 'modelos.dart';
 
-const String baseUrl = 'http://127.0.0.1:8001';
+const String baseUrl = 'http://127.0.0.1:8000';
 
 Future<http.Response> _get(String path) {
   return http

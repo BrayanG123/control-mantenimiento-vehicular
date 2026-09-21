@@ -72,3 +72,24 @@ Flujo:
 
 Resultado:
 Consulta el pasado dentro de la app: aceite el 3 sep 2026 a los 12.500 km.
+
+
+# Flujo 4 — revisar cuánto gastó en el año
+
+Flujo: 
+    - Abrir inicio
+    - Ver resumen de costos
+    - Confirmar el año en curso
+    - Abrir el rubro mas alto
+    - Ver el gasto mas alto
+
+
+# Flujo 5 -  Gestionar el acceso
+
+Flujo:
+    - Abrir la app
+    - Iniciar sesion
+    - Completar correo y contraseña
+    - Crear cuenta
+    - Olvide mi contraseña
+    - Revisar el correo 
