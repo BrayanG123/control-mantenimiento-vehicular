@@ -140,10 +140,11 @@ Archivo: [Control Vehicular — Wireframe Mejorado](https://www.figma.com/design
 | 2 | Registrar mantenimiento realizado | Sí, 5 pasos | Sí | `registrar_mantenimiento.dart` |
 | 3 | Consultar historial | Sí, 5 pasos | Sí | `historial.dart`, `detalle_mantenimiento.dart` |
 | 4 | Revisar cuánto gastó en el año | Sí, 5 pasos | Sí | `gastos.dart` |
-| **5** | **Gestionar el acceso** (inicio → login, crear cuenta, olvidé) | **Sí, 6 pasos** | **Sí (P / HP / V)** | `acceso.dart`, `sesion.dart` |
+| **5** | **Ajustar intervalos a su uso intensivo** (plan → detalle aceite → 3.000 km → Inicio recalculado) | **Sí, 6 pasos** | **Sí (P / HP / V)** | `plan_mantenimiento.dart`, `detalle_intervalo.dart`, `editar_intervalo.dart` |
 | — | Alta de vehículo | No hay pantalla | No | `alta_vehiculo.dart` (cerrado IHC) |
+| — | Acceso / login | **Eliminado de Figma** | Eliminado | `acceso.dart`, `sesion.dart` (código; no se vende en Figma) |
 
-El docente pidió **cinco flujos**. Los cinco están en Figma **y en código**. El 5 es sesión local (sin API de usuarios): se vende como pantallas de acceso, no como login de servidor.
+El docente pidió **cinco flujos**. El 5 de entrega es **intervalos / uso intensivo** (el login no lo cuenta). Los 1–5 están en Figma y en código.
 
 Gastos **sí cuenta**: está diseñado, prototipado en tira y con validaciones en Clase 9. Si se imprime, se puede vender. El brief v0.2 lo dejaba fuera; el Figma lo metió. Defenderlo o no, pero no decir que no existe.
 
@@ -159,7 +160,7 @@ Gastos **sí cuenta**: está diseñado, prototipado en tira y con validaciones e
 
 ## Qué no se vende
 
-- Autenticación contra un servidor (la sesión del Flujo 5 es **local**, en memoria; no hay JWT ni usuarios en el backend).
+- Autenticación contra un servidor (el acceso sigue en código como soporte; ya no es el Flujo 5 de entrega).
 - Notificaciones push, multi-vehículo, IA, integración con talleres.
 - Play Store si no está publicado.
 

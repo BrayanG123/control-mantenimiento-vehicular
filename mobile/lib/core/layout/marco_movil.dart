@@ -37,8 +37,11 @@ class MarcoMovil extends StatelessWidget {
           ),
           clipBehavior: Clip.antiAlias,
           child: MediaQuery(
-            data: MediaQuery.of(context)
-                .copyWith(size: Size(anchoTelefono, alto)),
+            data: MediaQuery.of(context).copyWith(
+              size: Size(anchoTelefono, alto),
+              padding: EdgeInsets.zero,
+              viewPadding: EdgeInsets.zero,
+            ),
             child: child,
           ),
         ),

@@ -21,5 +21,10 @@ class Vehiculo(Base):
         back_populates="vehiculo",
         cascade="all, delete-orphan",
     )
+    intervalos = relationship(
+        "IntervaloVehiculo",
+        back_populates="vehiculo",
+        cascade="all, delete-orphan",
+    )
     usuario = relationship("Usuario", back_populates="vehiculo")
 

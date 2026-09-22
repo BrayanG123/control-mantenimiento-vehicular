@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../data/gastos_api.dart';
 import '../data/mantenimiento_api.dart';
 import '../data/vehiculo_api.dart';
+import '../models/item_plan.dart';
 import '../models/proximo_mantenimiento.dart';
 import '../models/resumen_gastos.dart';
 import '../models/vehiculo.dart';
@@ -31,17 +32,20 @@ class ControladorInicio extends ChangeNotifier {
   Vehiculo? vehiculo;
   List<ProximoMantenimiento> proximosMantenimientos = [];
   ResumenGastos? resumenGastos;
+  ItemPlan? intervaloAjustado;
   String? mensajeError;
 
   Future<void> cargarInicio() async {
     estado = EstadoCarga.cargando;
     mensajeError = null;
+    intervaloAjustado = null;
     notifyListeners();
 
     try {
       vehiculo = await _vehiculoApi.obtenerVehiculo();
       proximosMantenimientos = await _mantenimientoApi.obtenerProximos();
       resumenGastos = await _gastosApi.obtenerResumen();
+      intervaloAjustado = await _intervaloAjustado();
       estado = EstadoCarga.completado;
     } catch (_) {
       mensajeError = 'No se pudo cargar el inicio';
@@ -49,5 +53,21 @@ class ControladorInicio extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Future<ItemPlan?> _intervaloAjustado() async {
+    try {
+      final plan = await _mantenimientoApi.obtenerPlan();
+      ItemPlan? elegido;
+      for (final item in plan) {
+        if (!item.personalizado) continue;
+        if (elegido == null || item.tipo == 'aceite') {
+          elegido = item;
+        }
+      }
+      return elegido;
+    } catch (_) {
+      return null;
+    }
   }
 }

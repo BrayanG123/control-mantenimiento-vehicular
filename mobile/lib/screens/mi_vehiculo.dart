@@ -6,6 +6,7 @@ import '../core/utils/formato.dart';
 import '../models/vehiculo.dart';
 import '../state/controlador_vehiculo.dart';
 import '../state/estado_carga.dart';
+import 'plan_mantenimiento.dart';
 
 const _teal = Color(0xFF00695C);
 const _muted = muted;
@@ -248,6 +249,8 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
         _cabecera(),
+        const SizedBox(height: 12),
+        _entradaPlan(),
         const SizedBox(height: 8),
         LayoutBuilder(
           builder: (context, cons) {
@@ -464,11 +467,63 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
             );
           },
         ),
+        const SizedBox(height: 20),
+        _entradaPlan(),
         if (widget.onCerrarSesion != null) ...[
           const SizedBox(height: 32),
           _botonCerrarSesion(),
         ],
       ],
+    );
+  }
+
+  void abrirPlan() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PlanMantenimientoPantalla()),
+    );
+  }
+
+  Widget _entradaPlan() {
+    return TextButton(
+      onPressed: abrirPlan,
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.all(16),
+        foregroundColor: _texto,
+        alignment: Alignment.centerLeft,
+        minimumSize: const Size(double.infinity, 72),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: _borde),
+        ),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.build_outlined, color: _teal),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Plan de mantenimiento',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: _texto,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Intervalos por tipo · toca para ajustar',
+                  style: TextStyle(fontSize: 12, color: _muted),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.chevron_right, color: _muted),
+        ],
+      ),
     );
   }
 

@@ -20,4 +20,10 @@ class Mantenimiento(Base):
 
     @property
     def proximo_kilometraje(self) -> int:
-        return self.kilometraje + INTERVALOS_KM[self.tipo]
+        intervalo = INTERVALOS_KM[self.tipo]
+        if self.vehiculo is not None:
+            for fila in self.vehiculo.intervalos:
+                if fila.tipo == self.tipo:
+                    intervalo = fila.kilometros
+                    break
+        return self.kilometraje + intervalo

@@ -30,6 +30,18 @@ class MantenimientoResponse(MantenimientoBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ItemPlan(BaseModel):
+    tipo: TipoMantenimiento
+    intervalo_km: int
+    intervalo_fabrica: int
+    personalizado: bool
+    estado: EstadoMantenimiento
+
+
+class IntervaloUpdate(BaseModel):
+    intervalo_km: int
+
+
 class ProximoMantenimientoItem(BaseModel):
     tipo: TipoMantenimiento
     ultimo_kilometraje: int | None

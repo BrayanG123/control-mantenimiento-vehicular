@@ -4,7 +4,10 @@ from sqlalchemy.orm import Session
 from app.core.autenticacion import obtener_usuario_actual
 from app.database import get_db
 from app.models.usuario import Usuario
+from app.core.tipos import TipoMantenimiento
 from app.schemas.mantenimiento import (
+    IntervaloUpdate,
+    ItemPlan,
     MantenimientoCreate,
     MantenimientoResponse,
     ProximoMantenimientoItem,
@@ -46,3 +49,26 @@ def obtener_pendientes(
     usuario: Usuario = Depends(obtener_usuario_actual),
 ):
     return mantenimiento_service.obtener_pendientes(db, usuario.id)
+
+
+@router.get("/plan", response_model=list[ItemPlan])
+def obtener_plan(
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obtener_usuario_actual),
+):
+    return mantenimiento_service.listar_plan(db, usuario.id)
+
+
+@router.patch("/plan/{tipo}", response_model=ItemPlan)
+def actualizar_intervalo(
+    tipo: TipoMantenimiento,
+    datos: IntervaloUpdate,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obtener_usuario_actual),
+):
+    return mantenimiento_service.actualizar_intervalo(
+        db,
+        usuario.id,
+        tipo,
+        datos.intervalo_km,
+    )

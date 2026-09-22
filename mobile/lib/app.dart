@@ -181,8 +181,14 @@ class _HomeState extends State<Home> {
       );
     }
 
+    void irA(int i) {
+      setState(() {
+        tab = i;
+      });
+    }
+
     final pantallas = [
-      const InicioPantalla(),
+      InicioPantalla(onAbrirVehiculo: () => irA(1)),
       MiVehiculoPantalla(
         onCerrarSesion: () {
           SesionAplicacion.cerrar();
@@ -196,12 +202,6 @@ class _HomeState extends State<Home> {
 
     final conSidebar =
         MediaQuery.sizeOf(context).width >= MarcoMovil.anchoTablet;
-
-    void irA(int i) {
-      setState(() {
-        tab = i;
-      });
-    }
 
     void cerrarSesion() {
       SesionAplicacion.cerrar();
@@ -223,15 +223,10 @@ class _HomeState extends State<Home> {
                 children: [
                   SizedBox(
                     width: 240,
-                    child: Semantics(
-                      role: SemanticsRole.navigation,
-                      explicitChildNodes: true,
-                      label: 'Navegacion principal',
-                      child: BarraLateral(
-                        tab: tab,
-                        onTab: irA,
-                        onCerrarSesion: cerrarSesion,
-                      ),
+                    child: BarraLateral(
+                      tab: tab,
+                      onTab: irA,
+                      onCerrarSesion: cerrarSesion,
                     ),
                   ),
                   Expanded(child: pantallas[tab]),
@@ -241,25 +236,7 @@ class _HomeState extends State<Home> {
       ),
       bottomNavigationBar: conSidebar
           ? null
-          : Semantics(
-              role: SemanticsRole.navigation,
-              explicitChildNodes: true,
-              label: 'Navegacion principal',
-              child: BottomNavigationBar(
-                currentIndex: tab,
-                onTap: irA,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Inicio',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.directions_car),
-                    label: 'Mi vehiculo',
-                  ),
-                ],
-              ),
-            ),
+          : _NavInferior(tab: tab, onTab: irA),
     );
   }
 }
@@ -361,34 +338,77 @@ class BarraLateral extends StatelessWidget {
     required String label,
   }) {
     final sel = tab == indice;
-    return Semantics(
-      button: true,
-      selected: sel,
-      label: sel ? '$label, seleccionado' : label,
-      child: Material(
-        color: sel ? fondoSuave : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: () => onTab(indice),
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              children: [
-                Icon(icono, color: sel ? teal : muted, size: 20),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontWeight: sel ? FontWeight.w600 : FontWeight.w500,
-                      color: sel ? teal : texto,
-                    ),
-                  ),
-                ),
-              ],
+    return TextButton(
+      onPressed: () => onTab(indice),
+      style: TextButton.styleFrom(
+        alignment: Alignment.centerLeft,
+        backgroundColor: sel ? fondoSuave : Colors.transparent,
+        foregroundColor: sel ? teal : texto,
+        minimumSize: const Size(double.infinity, 48),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Row(
+        children: [
+          Icon(icono, color: sel ? teal : muted, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontWeight: sel ? FontWeight.w600 : FontWeight.w500,
+                color: sel ? teal : texto,
+              ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavInferior extends StatelessWidget {
+  const _NavInferior({required this.tab, required this.onTab});
+
+  final int tab;
+  final ValueChanged<int> onTab;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            children: [
+              _boton(0, Icons.home, 'Inicio'),
+              _boton(1, Icons.directions_car, 'Mi vehiculo'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _boton(int indice, IconData icono, String label) {
+    final sel = tab == indice;
+    return Expanded(
+      child: TextButton(
+        onPressed: () => onTab(indice),
+        style: TextButton.styleFrom(
+          foregroundColor: sel ? teal : muted,
+          backgroundColor: sel ? fondoSuave : Colors.transparent,
+          shape: const RoundedRectangleBorder(),
+          padding: const EdgeInsets.symmetric(vertical: 6),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icono, size: 22),
+            Text(label, style: const TextStyle(fontSize: 12)),
+          ],
         ),
       ),
     );
