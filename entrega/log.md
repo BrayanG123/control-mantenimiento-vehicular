@@ -246,3 +246,10 @@ Formato de entrada:
 - **Por qué (requisito docente):** El Flujo 5 empieza en Mi vehículo; si ese botón no responde, el recorrido no se puede mostrar.
 - **Archivos:** `mobile/lib/app.dart`, `mobile/lib/screens/inicio.dart`, `mobile/lib/core/layout/marco_movil.dart`
 - **Flujo / entregable:** Flujo 5 ? ajustar intervalos
+
+## 2026-09-21 23:10
+- **Que:** En Inicio quedo la tarjeta Plan de mantenimiento, que abre el flujo 5 directo. Se recompilo la web del puerto 8090 y se reinicio el backend: /mantenimiento/plan ya responde.
+- **Por que (requisito docente):** El quinto flujo tiene que verse en la app (plan, detalle del aceite y editar intervalo), con happy path y validacion.
+- **Archivos:** mobile/lib/screens/inicio.dart, mobile/lib/screens/mi_vehiculo.dart, entrega/flujos.md
+- **Flujo / entregable:** Flujo 5
+

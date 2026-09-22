@@ -69,7 +69,7 @@ El brief v0.2 lo dejaba fuera de alcance; **el Figma y la app lo tienen**. Si se
 ### Flujo 5 — ajustar intervalos a su uso intensivo
 
 **Estado Figma:** cerrado (21 sep 2026) en `02_Wireframes` (6 pantallas + prototipo) y `04_Clase9_Estados` (Principal · Happy Path · Validaciones).  
-**Código:** tarjeta **Plan de mantenimiento** en `inicio.dart` (abre el plan directo) y el mismo botón arriba en `mi_vehiculo.dart`. Pantallas: `plan_mantenimiento.dart`, `detalle_intervalo.dart`, `editar_intervalo.dart`. El aceite de fábrica queda en 4.000 km; al guardarlo en 3.000, Inicio recalcula el pendiente.
+**Código:** el botón **Plan de mantenimiento** está arriba en `mi_vehiculo.dart`. Pantallas: `plan_mantenimiento.dart`, `detalle_intervalo.dart`, `editar_intervalo.dart`. El aceite de fábrica queda en 4.000 km; al guardarlo en 3.000, Inicio recalcula el pendiente.
 
 [Tira en Wireframes](https://www.figma.com/design/yI6CH5oYwBPGb6MhpEP4jv/Control-Vehicular-%E2%80%94-Wireframe-Mejorado?node-id=331-1553) · [Clase 9](https://www.figma.com/design/yI6CH5oYwBPGb6MhpEP4jv/Control-Vehicular-%E2%80%94-Wireframe-Mejorado?node-id=276-2872)
 

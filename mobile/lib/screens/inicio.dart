@@ -12,7 +12,6 @@ import '../state/controlador_inicio.dart';
 import '../state/estado_carga.dart';
 import 'gastos.dart';
 import 'historial.dart';
-import 'plan_mantenimiento.dart';
 import 'registrar_mantenimiento.dart';
 
 class InicioPantalla extends StatefulWidget {
@@ -78,14 +77,6 @@ class _InicioPantallaState extends State<InicioPantalla> {
       context,
       MaterialPageRoute(builder: (_) => const GastosPantalla()),
     );
-  }
-
-  Future<void> abrirPlan() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const PlanMantenimientoPantalla()),
-    );
-    if (mounted) await cargar();
   }
 
   Future<void> abrirRegistro(ProximoMantenimiento item) async {
@@ -160,8 +151,6 @@ class _InicioPantallaState extends State<InicioPantalla> {
             if (vehiculo != null) ...[
               _cardVehiculo(vehiculo!),
               const SizedBox(height: 16),
-              _cardPlan(),
-              const SizedBox(height: 16),
               _cardGastos(),
               const SizedBox(height: 24),
             ],
@@ -230,48 +219,6 @@ class _InicioPantallaState extends State<InicioPantalla> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _cardPlan() {
-    return Card(
-      child: TextButton(
-        onPressed: abrirPlan,
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.all(16),
-          foregroundColor: texto,
-          alignment: Alignment.centerLeft,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        child: Row(
-          children: [
-            ExcludeSemantics(
-              child: CircleAvatar(
-                backgroundColor: Colors.teal.shade50,
-                child: Icon(Icons.build_outlined, color: Colors.teal.shade700),
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Plan de mantenimiento',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text('Intervalos por tipo · toca para ajustar'),
-                ],
-              ),
-            ),
-            ExcludeSemantics(
-              child: Icon(Icons.chevron_right, color: Colors.grey),
-            ),
-          ],
-        ),
       ),
     );
   }
