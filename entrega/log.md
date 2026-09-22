@@ -260,3 +260,15 @@ Formato de entrada:
 - **Archivos:** mobile/lib/screens/inicio.dart, entrega/flujos.md
 - **Flujo / entregable:** Flujo 5
 
+## 2026-09-22 16:20
+- **Qué:** Se armó el documento digital de entrega (A + B + accesibilidad) en Word/Markdown, con Flujo 5 = intervalos (no login), listo para subir a Google Drive como Google Doc.
+- **Por qué (requisito docente):** Documento digital para Drive (martes 18:00) con cinco flujos, Bs 20/350, intervalos y artefacto de accesibilidad.
+- **Archivos:** `entrega/Entrega-IHC-Clase10-CMV.docx`, `entrega/documento-entrega-clase10.md`, `entrega/notion-borrador.md`
+- **Flujo / entregable:** documento
+
+
+## 2026-09-22 16:47
+- **Que:** Tras guardar un intervalo, la app cierra Editar y Detalle y vuelve al Plan de mantenimiento (lista recargada), en lugar de quedarse en el formulario.
+- **Por que (requisito docente):** Flujo 5 happy path: el usuario debe ver el resultado del ajuste sin quedar atrapado en Editar.
+- **Archivos:** mobile/lib/screens/editar_intervalo.dart, mobile/lib/screens/detalle_intervalo.dart, entrega/flujos.md
+- **Flujo / entregable:** Flujo 5

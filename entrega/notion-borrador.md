@@ -2,10 +2,9 @@
 
 **URL:** https://app.notion.com/p/3e264a4ff2f581e7a8caf75352f83cbe?pvs=204
 
-Actualizado 20 sep 2026 ~23:25 con referencias del docente (Clase 10):
+Actualizado 20 sep 2026 ~23:25 con referencias del docente (Clase 10).
 
-- Documento A: 5 flujos con pantallas, happy path y validación
-- Documento B: Carlos/Mariana, **Bs 20 vs Bs 350**, **intervalos 10.000 vs 5.000 km**
-- Accesibilidad: fórmula observación → impacto → corrección → prueba; 3 hallazgos WAVE/Lighthouse interpretados; teclado/zoom/foco
+**Atención (22 sep 2026):** el Notion todavía lista el Flujo 5 como “Gestionar el acceso”. En Figma/código el Flujo 5 de entrega es **Ajustar intervalos a su uso intensivo**. El documento canónico corregido está en:
 
-La versión canónica para revisar el diseño del documento está en Notion.
+- `entrega/Entrega-IHC-Clase10-CMV.docx` (para subir a Google Drive → Abrir con Google Docs)
+- `entrega/documento-entrega-clase10.md`

@@ -107,11 +107,8 @@ class _EditarIntervaloPantallaState extends State<EditarIntervaloPantalla> {
         numero,
       );
       if (!mounted) return;
-      setState(() {
-        guardando = false;
-        guardadoOk = true;
-        kmGuardado = numero;
-      });
+      // Vuelve al detalle; el detalle cierra y deja en Plan con lista fresca.
+      Navigator.pop(context, numero);
     } on ErrorApi catch (errorApi) {
       if (!mounted) return;
       setState(() {

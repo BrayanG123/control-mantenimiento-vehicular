@@ -38,10 +38,8 @@ class _DetalleIntervaloPantallaState extends State<DetalleIntervaloPantalla> {
       ),
     );
     if (nuevo == null || !mounted) return;
-    setState(() {
-      intervaloKm = nuevo;
-      personalizado = true;
-    });
+    // Tras guardar el intervalo, volver al Plan (no quedarse en Detalle).
+    Navigator.pop(context, nuevo);
   }
 
   @override

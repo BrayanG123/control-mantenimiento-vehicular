@@ -73,7 +73,7 @@ El brief v0.2 lo dejaba fuera de alcance; **el Figma y la app lo tienen**. Si se
 
 [Tira en Wireframes](https://www.figma.com/design/yI6CH5oYwBPGb6MhpEP4jv/Control-Vehicular-%E2%80%94-Wireframe-Mejorado?node-id=331-1553) · [Clase 9](https://www.figma.com/design/yI6CH5oYwBPGb6MhpEP4jv/Control-Vehicular-%E2%80%94-Wireframe-Mejorado?node-id=276-2872)
 
-Pasos: **Inicio** → **Mi vehículo** → **Plan de mantenimiento** → **Detalle cambio de aceite** (ver intervalo 4.000 km y por qué) → **Editar intervalo** (3.000 km + guardar) → **Inicio** con pendiente recalculado.
+Pasos: **Inicio** → **Mi vehículo** → **Plan de mantenimiento** → **Detalle cambio de aceite** (ver intervalo 4.000 km y por qué) → **Editar intervalo** (3.000 km + guardar) → **Plan** actualizado → **Inicio** con pendiente recalculado.
 
 Validaciones (IHC, no solo color — campo Error/Success con texto + icono):
 1. Intervalo vacío
