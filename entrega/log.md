@@ -253,3 +253,10 @@ Formato de entrada:
 - **Archivos:** mobile/lib/screens/inicio.dart, mobile/lib/screens/mi_vehiculo.dart, entrega/flujos.md
 - **Flujo / entregable:** Flujo 5
 
+
+## 2026-09-21 23:15
+- **Que:** Se quito la tarjeta Plan de mantenimiento de Inicio. El plan se abre desde Mi vehiculo.
+- **Por que (requisito docente):** El Flujo 5 entra por Mi vehiculo, no desde un atajo en Inicio.
+- **Archivos:** mobile/lib/screens/inicio.dart, entrega/flujos.md
+- **Flujo / entregable:** Flujo 5
+
