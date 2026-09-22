@@ -71,9 +71,12 @@ Configura estas variables en `.env`:
 ```env
 RESEND_API_KEY=re_tu_clave
 RESEND_REMITENTE=Mantenimiento <correo@tu-dominio-verificado.com>
-URL_MOBILE=http://127.0.0.1:3000
+URL_MOBILE=http://127.0.0.1:8080
 DURACION_RECUPERACION_MINUTOS=15
 ```
+
+Si `RESEND_API_KEY` está vacío, el backend no falla: deja el enlace en
+`ultimo_enlace_recuperacion.txt` y en la consola de uvicorn (modo demo local).
 
 `POST /autenticacion/recuperacion` envía el enlace y
 `POST /autenticacion/restablecimiento` guarda la contraseña nueva. El token del

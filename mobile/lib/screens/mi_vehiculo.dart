@@ -126,14 +126,66 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
         .showSnackBar(SnackBar(content: Text(controlador.mensajeError!)));
   }
 
+  Widget _cabecera() {
+    return Row(
+      children: [
+        const Expanded(
+          child: Text(
+            'Mi vehiculo',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: _texto,
+            ),
+          ),
+        ),
+        if (widget.onCerrarSesion != null)
+          TextButton.icon(
+            onPressed: widget.onCerrarSesion,
+            icon: const Icon(Icons.logout, size: 18, color: _teal),
+            label: const Text(
+              'Cerrar sesion',
+              style: TextStyle(
+                color: _teal,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (cargando) {
-      return const Center(child: CircularProgressIndicator());
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        child: Column(
+          children: [
+            _cabecera(),
+            const Expanded(child: Center(child: CircularProgressIndicator())),
+          ],
+        ),
+      );
     }
 
     if (error != null || vehiculo == null) {
-      return Center(child: Text(error ?? 'sin vehiculo'));
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        child: Column(
+          children: [
+            _cabecera(),
+            Expanded(
+              child: Center(child: Text(error ?? 'sin vehiculo')),
+            ),
+            if (widget.onCerrarSesion != null) ...[
+              const SizedBox(height: 16),
+              _botonCerrarSesion(),
+            ],
+          ],
+        ),
+      );
     }
 
     final vehiculoActual = vehiculo!;
@@ -195,34 +247,7 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
-        Row(
-          children: [
-            const Expanded(
-              child: Text(
-                'Mi vehiculo',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: _texto,
-                ),
-              ),
-            ),
-            IconButton(
-              tooltip: 'Cerrar sesion',
-              onPressed: widget.onCerrarSesion,
-              icon: const Icon(Icons.logout, color: _teal),
-            ),
-            IconButton(
-              tooltip: 'Editar vehiculo',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('editar viene mas adelante')),
-                );
-              },
-              icon: const Icon(Icons.edit_outlined, color: _teal),
-            ),
-          ],
-        ),
+        _cabecera(),
         const SizedBox(height: 8),
         LayoutBuilder(
           builder: (context, cons) {
@@ -439,7 +464,31 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
             );
           },
         ),
+        if (widget.onCerrarSesion != null) ...[
+          const SizedBox(height: 32),
+          _botonCerrarSesion(),
+        ],
       ],
+    );
+  }
+
+  Widget _botonCerrarSesion() {
+    return Semantics(
+      button: true,
+      label: 'Cerrar sesion',
+      child: OutlinedButton.icon(
+        onPressed: widget.onCerrarSesion,
+        icon: const Icon(Icons.logout, size: 18),
+        label: const Text('Cerrar sesion'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: _teal,
+          side: const BorderSide(color: _borde),
+          minimumSize: const Size.fromHeight(48),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+        ),
+      ),
     );
   }
 

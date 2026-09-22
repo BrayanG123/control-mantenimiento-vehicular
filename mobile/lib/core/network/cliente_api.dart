@@ -71,8 +71,19 @@ class ClienteApi {
     String mensaje = 'No se pudo completar la solicitud';
     try {
       final cuerpo = jsonDecode(respuesta.body);
-      if (cuerpo is Map<String, dynamic> && cuerpo['detail'] is String) {
-        mensaje = cuerpo['detail'] as String;
+      if (cuerpo is Map<String, dynamic>) {
+        final detail = cuerpo['detail'];
+        if (detail is String) {
+          mensaje = detail;
+        } else if (detail is List && detail.isNotEmpty) {
+          final primero = detail.first;
+          if (primero is Map && primero['msg'] is String) {
+            final msg = primero['msg'] as String;
+            mensaje = msg.contains('at least 20')
+                ? 'El enlace no es valido o ya vencio'
+                : msg;
+          }
+        }
       }
     } catch (_) {}
 

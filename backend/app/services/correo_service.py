@@ -1,14 +1,18 @@
 import html
+from pathlib import Path
 
 import httpx
 
 from app.config import settings
 from app.core.excepciones import ServicioNoDisponible
 
+_ARCHIVO_ENLACE_LOCAL = Path(__file__).resolve().parents[2] / "ultimo_enlace_recuperacion.txt"
+
 
 def enviar_enlace_recuperacion(correo: str, enlace: str) -> None:
-    if not settings.resend_api_key:
-        raise ServicioNoDisponible("El servicio de correo no está configurado")
+    if not settings.resend_api_key.strip():
+        _guardar_enlace_local(correo, enlace)
+        return
 
     contenido = (
         "<h2>Cambiar contraseña</h2>"
@@ -34,4 +38,17 @@ def enviar_enlace_recuperacion(correo: str, enlace: str) -> None:
         )
         respuesta.raise_for_status()
     except httpx.HTTPError as error:
-        raise ServicioNoDisponible("No se pudo enviar el correo de recuperación") from error
+        raise ServicioNoDisponible(
+            "No se pudo enviar el correo de recuperación"
+        ) from error
+
+
+def _guardar_enlace_local(correo: str, enlace: str) -> None:
+    """Sin Resend: deja el enlace en consola y en un archivo para la demo local."""
+    texto = (
+        "RECUPERACION LOCAL (sin RESEND_API_KEY)\n"
+        f"Correo: {correo}\n"
+        f"Enlace: {enlace}\n"
+    )
+    _ARCHIVO_ENLACE_LOCAL.write_text(texto, encoding="utf-8")
+    print(texto, flush=True)

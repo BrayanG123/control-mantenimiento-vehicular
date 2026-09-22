@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     duracion_recuperacion_minutos: int = 15
     resend_api_key: str = ""
     resend_remitente: str = "Mantenimiento <onboarding@resend.dev>"
-    url_mobile: str = "http://127.0.0.1:3000"
+    url_mobile: str = "http://127.0.0.1:8080"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

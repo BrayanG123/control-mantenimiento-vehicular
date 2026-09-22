@@ -7,8 +7,13 @@ import '../models/vehiculo.dart';
 
 class AltaVehiculoPantalla extends StatefulWidget {
   final VoidCallback onCreado;
+  final VoidCallback? onCerrarSesion;
 
-  const AltaVehiculoPantalla({super.key, required this.onCreado});
+  const AltaVehiculoPantalla({
+    super.key,
+    required this.onCreado,
+    this.onCerrarSesion,
+  });
 
   @override
   State<AltaVehiculoPantalla> createState() => _AltaVehiculoPantallaState();
@@ -156,6 +161,14 @@ class _AltaVehiculoPantallaState extends State<AltaVehiculoPantalla> {
             color: texto,
           ),
         ),
+        actions: [
+          if (widget.onCerrarSesion != null)
+            IconButton(
+              tooltip: 'Cerrar sesion',
+              onPressed: widget.onCerrarSesion,
+              icon: const Icon(Icons.logout, color: teal),
+            ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
@@ -243,6 +256,26 @@ class _AltaVehiculoPantallaState extends State<AltaVehiculoPantalla> {
               onTap: guardando ? null : guardar,
             ),
           ),
+          if (widget.onCerrarSesion != null) ...[
+            const SizedBox(height: 24),
+            Semantics(
+              button: true,
+              label: 'Cerrar sesion',
+              child: OutlinedButton.icon(
+                onPressed: widget.onCerrarSesion,
+                icon: const Icon(Icons.logout, size: 18),
+                label: const Text('Cerrar sesion'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: teal,
+                  side: const BorderSide(color: borde),
+                  minimumSize: const Size.fromHeight(48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -43,8 +43,16 @@ class SolicitudRecuperacion(BaseModel):
 
 
 class RestablecimientoContrasena(BaseModel):
-    token: str = Field(min_length=20, max_length=256)
+    token: str = Field(max_length=256)
     nueva_contrasena: str = Field(min_length=6, max_length=128)
+
+    @field_validator("token")
+    @classmethod
+    def validar_token(cls, token: str) -> str:
+        token_limpio = token.strip()
+        if len(token_limpio) < 20:
+            raise ValueError("El enlace no es válido o ya venció")
+        return token_limpio
 
 
 class MensajeResponse(BaseModel):

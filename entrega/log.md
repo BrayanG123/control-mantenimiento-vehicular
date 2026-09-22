@@ -161,3 +161,27 @@ Formato de entrada:
 
 
 
+
+## 2026-09-21 21:26
+- **Qué:** El shell HTML de acceso deja de guardar cuentas en sessionStorage y pasa a llamar al backend (registro, login y recuperacion); guarda el JWT en `cmv_token` para que Flutter hidrate la sesion.
+- **Por qué (requisito docente):** Flujo 5 happy path; crear cuenta e iniciar sesion deben persistir en el API, no solo en el navegador.
+- **Archivos:** `mobile/web/index.html`, `mobile/build/web/index.html`
+- **Flujo / entregable:** Flujo 5
+
+## 2026-09-21 21:38
+- **Qué:** `Cerrar sesion` queda visible: texto+icono en Mi vehiculo, boton en el alta de vehiculo y enlace en la barra lateral web/tablet.
+- **Por qué (requisito docente):** Flujo 5; el usuario debe poder salir de la sesion sin buscar un icono oculto.
+- **Archivos:** `mobile/lib/screens/mi_vehiculo.dart`, `mobile/lib/screens/alta_vehiculo.dart`, `mobile/lib/app.dart`
+- **Flujo / entregable:** Flujo 5
+
+## 2026-09-21 21:47
+- **Qué:** Sin `RESEND_API_KEY`, la recuperacion ya no corta el flujo: guarda el enlace en `backend/ultimo_enlace_recuperacion.txt` y en consola. Backend demo en `:8001` porque `:8000` quedo con proceso viejo.
+- **Por qué (requisito docente):** Flujo 5 (olvide contrasena) happy path en demo local sin depender de Resend.
+- **Archivos:** `backend/app/services/correo_service.py`, `backend/app/config.py`, `backend/.env.example`, `backend/README.md`, `mobile/web/index.html`, `mobile/lib/core/config/configuracion_api.dart`
+- **Flujo / entregable:** Flujo 5
+
+## 2026-09-21 22:02
+- **Qué:** Mensajes de error del restablecimiento mas claros (token invalido) y el cliente API interpreta `detail` en lista de validacion.
+- **Por qué (requisito docente):** Flujo 5; error con texto entendible, no generico.
+- **Archivos:** `backend/app/schemas/usuario.py`, `mobile/lib/core/network/cliente_api.dart`
+- **Flujo / entregable:** Flujo 5

@@ -171,6 +171,13 @@ class _HomeState extends State<Home> {
             hayVehiculo = true;
           });
         },
+        onCerrarSesion: () {
+          SesionAplicacion.cerrar();
+          setState(() {
+            tab = 0;
+            hayVehiculo = false;
+          });
+        },
       );
     }
 
@@ -181,6 +188,7 @@ class _HomeState extends State<Home> {
           SesionAplicacion.cerrar();
           setState(() {
             tab = 0;
+            hayVehiculo = false;
           });
         },
       ),
@@ -192,6 +200,14 @@ class _HomeState extends State<Home> {
     void irA(int i) {
       setState(() {
         tab = i;
+      });
+    }
+
+    void cerrarSesion() {
+      SesionAplicacion.cerrar();
+      setState(() {
+        tab = 0;
+        hayVehiculo = false;
       });
     }
 
@@ -211,7 +227,11 @@ class _HomeState extends State<Home> {
                       role: SemanticsRole.navigation,
                       explicitChildNodes: true,
                       label: 'Navegacion principal',
-                      child: BarraLateral(tab: tab, onTab: irA),
+                      child: BarraLateral(
+                        tab: tab,
+                        onTab: irA,
+                        onCerrarSesion: cerrarSesion,
+                      ),
                     ),
                   ),
                   Expanded(child: pantallas[tab]),
@@ -245,10 +265,16 @@ class _HomeState extends State<Home> {
 }
 
 class BarraLateral extends StatelessWidget {
-  const BarraLateral({super.key, required this.tab, required this.onTab});
+  const BarraLateral({
+    super.key,
+    required this.tab,
+    required this.onTab,
+    this.onCerrarSesion,
+  });
 
   final int tab;
   final ValueChanged<int> onTab;
+  final VoidCallback? onCerrarSesion;
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +313,41 @@ class BarraLateral extends StatelessWidget {
                 icono: Icons.directions_car,
                 label: 'Mi vehiculo',
               ),
+              const Spacer(),
+              if (onCerrarSesion != null)
+                Semantics(
+                  button: true,
+                  label: 'Cerrar sesion',
+                  child: Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    child: InkWell(
+                      onTap: onCerrarSesion,
+                      borderRadius: BorderRadius.circular(12),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout, color: muted, size: 20),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Cerrar sesion',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: texto,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
