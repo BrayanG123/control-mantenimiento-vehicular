@@ -250,8 +250,6 @@ class _MiVehiculoPantallaState extends State<MiVehiculoPantalla> {
       children: [
         _cabecera(),
         const SizedBox(height: 12),
-        _entradaPlan(),
-        const SizedBox(height: 8),
         LayoutBuilder(
           builder: (context, cons) {
             final ficha = Container(

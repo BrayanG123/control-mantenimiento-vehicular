@@ -18,3 +18,4 @@ Los propietarios de motocicletas y vehículos suelen perder de vista el mantenim
 - Control de kilometraje.
 - Próximo mantenimiento.
 - Historial de mantenimiento.
+- Ajustar intervalos a su uso intensivo.
